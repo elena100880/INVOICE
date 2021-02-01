@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets1 %}
+    <link rel="stylesheet" href="/css/invoices.css">
+{% endblock %}
+
+{% block content %}
+    
+    <h1>List of Invoices</h1>   
+
+    {{form(form)}}
+
+    <button type="button"><a class="button" href="{{ path('invoices') }}">Show all invoices</a></button>
+
+    {#<button type="button" id="addbutton"><a class="button" href="{{ path('invoice_add') }}">Add new invoice</a></button>#}
+
+    {% if not invoices %}
+            NO MATCHING!!
+        {% else %}  
+            <table>
+                <tr>
+                    <th>ID of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>EDIT the Invoice</th>
+                </tr>
+                
+                {% for invoice in invoices %} 
+                    <tr>
+                        <td> {{invoice.id}} </td>
+                        <td> {{invoice.supplier}} </td>
+                        <td> {{invoice.recipient}} </td>
+                        <td> -- </td>
+                        <td>{#<a href="{{ path('invoice_edit', {id: item.id}) }}">edit the invoice  >></a>#}</td>
+                    </tr>
+                {% endfor %}   
+            </table>
+        {% endif %}  
+        
+{% endblock %}
+
+
