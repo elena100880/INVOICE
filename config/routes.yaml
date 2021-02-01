@@ -10,9 +10,9 @@ invoice_edit:
             controller: App\Controller\InvoiceEditController::invoice_edit
 
 position_add:
-            path: /position/add
+            path: /position/add/{id_invoice}/{id_position}
             controller: App\Controller\InvoiceEditController::position_add
 
 position_delete:
-            path: /position/delete
+            path: /position/delete/{id_invoice}/{id_position}
             controller: App\Controller\InvoiceEditController::position_delete

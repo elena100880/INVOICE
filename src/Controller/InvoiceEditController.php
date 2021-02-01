@@ -71,7 +71,7 @@ class InvoiceEditController extends AbstractController
 
         $form->handleRequest($request);
                 
-    //saving info about chosen/not chosen products (by saving GET 'form' parameters) 
+    //saving info about chosen/not chosen positions (by saving GET 'form' parameters) 
         $request= Request::createFromGlobals();
         $requestForm=$request->query->get('form');
         $this->session->set('sessionForm', $requestForm  );
@@ -122,63 +122,64 @@ class InvoiceEditController extends AbstractController
         return new Response ($contents);
     } 
     
-    public function position_add ($id_position, $id_invoice)
+    public function position_add ($id_invoice, $id_position)
     {
         $requestForm=$this->session->get('sessionFormPerson'); 
         
-    // extracting array of PersonLikeProduct objects for the chosen product and person        
-        $productLikePersonManager = $this->getDoctrine()->getManager();
-        $productLikePersonArray = $productLikePersonManager->getRepository(PersonLikeProduct::class)
+    // extracting array of InvoicePosition objects for the chosen invoice and position        
+        $invoicePositionManager = $this->getDoctrine()->getManager();
+        $invoicePositionArray = $invoicePositionManager->getRepository(InvoicePosition::class)
                                                         ->findBy ([
-                                                            'person' => $id_person, 
-                                                            'product' => $id_product 
+                                                            'invoice' => $id_invoice, 
+                                                            'position' => $id_position 
                                                         ]);
-    //checking if this lover is already exist for the person  and adding new like for the person if not exist
-        if (empty($productLikePersonArray) ) { 
-            
-            $productManager = $this->getDoctrine()->getManager();
-            $product = $productManager->getRepository(Product::class)->find($id_product);
+    //checking if this like is already exist for the person  and adding new like for the person if not exist
+        if (empty($invoicePositionArray) ) { 
+                
+            $positionManager = $this->getDoctrine()->getManager();
+            $position = $positionManager->getRepository(Position::class)->find($id_position);
 
-            $personManager = $this->getDoctrine()->getManager();
-            $person = $personManager->getRepository(Person::class)->find($id_person);
+            $invoiceManager = $this->getDoctrine()->getManager();
+            $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
             
-            $personLikeProduct = new PersonLikeProduct();
-            $personLikeProduct->setPerson($person);
-            $personLikeProduct->setProduct($product);
+            $invoicePosition = new InvoicePosition();
+            $invoicePosition->setInvoice($invoice);
+            $invoicePosition->setPosition($position);
             
-            $productLikePersonManager ->persist($personLikeProduct);
-            $productLikePersonManager ->flush();
+            $invoicePositionManager ->persist($invoicePosition);
+            $invoicePositionManager ->flush();
 
-        //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
+        //reconstraction of chosen/not chosen positions (by getting saved GET form parameters) 
             $request= Request::createFromGlobals();
-            $requestForm=$this->session->get('sessionFormPerson'); 
+            $requestForm=$this->session->get('sessionForm'); 
         }
+   
         
-        return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'form'=>$requestForm]);
+        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
+                                                        'form'=>$requestForm]);
     }
 
-    public function position_delete ($id_position, $id_invoice)
+    public function position_delete ($id_invoice, $id_position)
     {
-    // extracting array of PersonLikeProduct objects for the chosen product and person    
-        $productLikePersonManager = $this->getDoctrine()->getManager();
-        $productLikePersonArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+    // extracting array of InvoicePosition objects for the chosen invoice and position     
+        $invoicePositionManager = $this->getDoctrine()->getManager();
+        $invoicePositionArray = $this->getDoctrine()->getRepository(InvoicePosition::class)
                                                 ->findBy ([
-                                                    'person' => $id_person, 
-                                                    'product' => $id_product 
+                                                    'invoice' => $id_invoice, 
+                                                    'position' => $id_position 
                                                 ]);
-    //delete lover for the product    
-        foreach ($productLikePersonArray as $prodpers) {
-            $productLikePersonManager->remove($prodpers);
-            $productLikePersonManager->flush();
+    // delete the position   
+        foreach ($invoicePositionArray as $inv_pos) {
+            $invoicePositionManager->remove($inv_pos);
+            $invoicePositionManager->flush();
         }   
-
-    //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-        $requestForm=$this->session->get('sessionFormPerson'); 
+    //reconstraction of chosen/not chosen positions (by getting saved GET 'form' parameters) 
+        $requestForm=$this->session->get('sessionForm'); 
         
-        return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'form'=>$requestForm]);
-    }
+        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
+                                                        'form'=>$requestForm]);
+            
+        }
 
         
 }
