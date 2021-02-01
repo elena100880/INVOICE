@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets1 %}
+
+    <link rel="stylesheet" href="/css/invoice_edit1.css">
+    
+      
+
+{% endblock %}
+
+{% block content %}  
+    <h1>Adding Positions to the Invoice with ID {{invoice.id}}</h1>
+    
+    <div id='invoice'>
+        <h1>Invoice:</h1>
+            Supplier: {{ invoice.supplier }}, <br>  
+            Recipient: {{ invoice.recipient }}, <br> 
+            Sum: .
+        
+        <h1>Positions in the Invoice:</h1>
+        <table>
+            <tr>
+                <th>Position ID</th> <th>Name of the position</th> <th>Value of the position</th> <th>Quantity</th>  <th>DELETE</th> 
+                        
+                {% for invoicePosition in invoicePositions %}
+                    <tr>
+                        <td>{{invoicePosition.getId }}</td>
+                        <td>{{invoicePosition.getName }}</td>
+                        <td>{{invoicePosition.getValue}}</td>
+                        <td>quantity</td>
+                        <td>
+                            <a class="button" href="{{ path('position_delete', {id_invoice: invoice.id, id_position: invoicePosition.getId }) }}"><span id="plus_minus"> &#8722   </span> </a>  
+                        </td> 
+                    </tr>
+                {% endfor %} 
+            
+        </table> 
+    </div>
+
+    <div id='form'>
+
+        <h1>Filter positions to add:</h1>
+        
+        {{ form(form) }}
+
+        <button type="button"><a class="button" href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">RESET</a></button><br>
+
+        {% if positions is not empty  %}
+            <h1>Add positions:</h1>
+           
+            <table>
+                <tr>
+                    <th>Position ID</th> <th>Name of the position</th> <th>Value of the position</th> <th>ADD</th>
+                </tr>
+                
+                        {% for position in positions %} 
+                            <tr>
+                                    <td>{{position.id}} </td>
+                                    <td>{{position.name}} </td>
+                                    <td>{{position.value}}</td>
+                                    <td> 
+                                        <a class="button" href="{{ path('position_add', {id_invoice: invoice.id, id_position: position.id}) }}"> <span id="plus_minus"> +  </span> </a>  
+                                    </td> 
+                            </tr>
+                        {% endfor %}
+            
+            </table>
+
+        {% endif %}
+    </div>
+    <div style='clear:both'></div>
+
+    <br><br> <a href="{{ path('invoices') }}">BACK TO ADDING INVOICES >> <br></a>
+  
+{% endblock %} 
+
+
+
+
+

@@ -4,3 +4,15 @@
 invoices:
             path: /invoices
             controller: App\Controller\InvoiceController::invoices
+
+invoice_edit:
+            path: /invoice/edit/{id_invoice}
+            controller: App\Controller\InvoiceEditController::invoice_edit
+
+position_add:
+            path: /position/add
+            controller: App\Controller\InvoiceEditController::position_add
+
+position_delete:
+            path: /position/delete
+            controller: App\Controller\InvoiceEditController::position_delete

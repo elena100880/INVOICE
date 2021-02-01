@@ -6,7 +6,6 @@ use App\Entity\Invoice;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class InvoiceType extends AbstractType
@@ -15,9 +14,9 @@ class InvoiceType extends AbstractType
     {
         $builder
             ->add('supplier', TextType::class, ['label'=>'Supplier:', 
-                                                'required' => false, ])
+                                                 ])
             ->add('recipient', TextType::class, ['label'=>'Recipient:',
-                                                'required' => false,])
+                                                ])
         ;
     }
 

@@ -5,9 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -28,42 +26,28 @@ class InvoiceController extends AbstractController
 {
     public function invoices(Request $request) : Response
     {     
-    // filter for invoices
+    
         $invoice = new Invoice();
-        $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
-                ->add('send', SubmitType::class, ['label'=>'Show the chosen']);
-       
+        $form = $this->createForm (InvoiceType::class, $invoice)
+                ->add('send', SubmitType::class, ['label'=>'Add new invoice']);
+
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() ) {
-            
-            $supplier=$form->get('supplier')->getData();
-            $recipient=$form->get('recipient')->getData();
-            
-            $entityManager = $this->getDoctrine()->getManager();
-            $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('inv')
-                                            -> from ('App\Entity\Invoice', 'inv');
-            if (isset($supplier)) {
-                $queryBuilder=$queryBuilder->setParameter('supplier', strtolower($supplier))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('inv.supplier'), ':supplier') ) ;
-            }
-            if (isset($recipient)) {
-                $queryBuilder=$queryBuilder->setParameter('recipient', strtolower($recipient))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('inv.recipient'), ':recipient') ) ;
-            }
-            $invoices = $queryBuilder->getQuery()->getResult();
-
+       
+        if ($form->isSubmitted()) {
+            $invoiceManager = $this->getDoctrine()->getManager();
+            $invoiceManager->persist($invoice);
+            $invoiceManager->flush();
+            $id=$invoice->getId();
+                    
+            return $this->redirectToRoute('invoice_edit', ['id_invoice'=> $id] );
         }
 
-        else {
-
-           $invoices = $this->getDoctrine()
-                            ->getRepository(Invoice::class)
-                            ->findAll();
-        }                
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                        -> select('i')
+                                        -> from ('App\Entity\Invoice', 'i')
+                                        -> orderBy('i.id', 'DESC');
+        $invoices  = $queryBuilder->getQuery()->getResult();
         
         $contents = $this->renderView('invoices/invoices.html.twig', [
                 
