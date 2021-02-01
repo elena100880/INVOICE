@@ -10,12 +10,12 @@
 
 {% block content %}  
     <h1>Adding Positions to the Invoice with ID {{invoice.id}}</h1>
-    
+
     <div id='invoice'>
         <h1>Invoice:</h1>
             Supplier: {{ invoice.supplier }}, <br>  
             Recipient: {{ invoice.recipient }}, <br> 
-            Sum: .
+            
         
         <h1>Positions in the Invoice:</h1>
         <table>
@@ -27,14 +27,23 @@
                         <td>{{invoicePosition.getId }}</td>
                         <td>{{invoicePosition.getName }}</td>
                         <td>{{invoicePosition.getValue}}</td>
-                        <td>quantity</td>
+                        <td>1</td>
                         <td>
                             <a class="button" href="{{ path('position_delete', {id_invoice: invoice.id, id_position: invoicePosition.getId }) }}"><span id="plus_minus"> &#8722   </span> </a>  
                         </td> 
                     </tr>
                 {% endfor %} 
             
-        </table> 
+        </table><br>
+
+        <h1>Sum: 
+                {% set sum = 0 %}
+                {% for invoicePosition in invoicePositions %}
+                    
+                    {% set sum = sum + invoicePosition.getValue %}
+
+                {% endfor %} {{sum}}. </h1>
+
     </div>
 
     <div id='form'>
