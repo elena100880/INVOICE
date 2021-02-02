@@ -8,7 +8,8 @@ Then open http://localhost/index.php/<route_path>.
 
 There are two pages:  http://localhost/index.php/invoices
 
-                      http://localhost/index.php/invoice/edit/{id_invoice} - available by link from http://localhost/index.php/invoices.
+                      http://localhost/index.php/invoice/edit/{id_invoice} 
+                      available by link from http://localhost/index.php/invoices.
                       
 As there is no PositionAdd functional in project - data.db(SQLite) file with example positions and invoices was added to the repository
 
