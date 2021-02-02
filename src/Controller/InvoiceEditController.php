@@ -44,6 +44,10 @@ class InvoiceEditController extends AbstractController
         $invoiceManager = $this->getDoctrine()->getManager();
         $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
 
+        if ( $invoice==null ) {
+            return $this->redirectToRoute('invoices');
+        }
+
     //making array of Positions objects in Invoice    
         $invoiceHavePositions = $invoice->getInvoicePosition();
         $invoicePositions = array();
