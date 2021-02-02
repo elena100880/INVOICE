@@ -19,7 +19,7 @@
         <h1>Positions in the Invoice:</h1>
         <table>
             <tr>
-                <th>Position ID</th> <th>Name of the position</th> <th>Value of the position</th> <th>Quantity</th>  <th>DELETE</th> 
+                <th>Position ID</th> <th>Name</th> <th>Value of 1 item</th> <th>Quantity</th> <th>Sum</th> <th>DELETE -1 </th> <th> ADD + 1 </th> 
                         
                 {% for Position in invoicePositions %}
                     <tr>
@@ -34,15 +34,20 @@
 
                             {% endfor %} {{quantity}}
                         </td>
+                        <td>{{quantity * Position.getValue}}</td>
                         <td>
                             <a class="button" href="{{ path('position_delete', {id_invoice: invoice.id, id_position: Position.getId }) }}"><span id="plus_minus"> &#8722   </span> </a>  
                         </td> 
+                        <td> 
+                            <a class="button" href="{{ path('position_add', {id_invoice: invoice.id, id_position: Position.getId}) }}"> <span id="plus_minus"> +  </span> </a>  
+                        </td> 
+
                     </tr>
                 {% endfor %} 
             
         </table><br>
 
-        <h1>Sum: 
+        <h1>Total Sum: 
                 {% set sum = 0 %}
                 {% for Position in invoicePositions %}
 

@@ -132,7 +132,7 @@ class InvoiceEditController extends AbstractController
                                                             'invoice' => $id_invoice, 
                                                             'position' => $id_position 
                                                         ]);
-        $invoicePosition =  $invoicePositionArray[0];
+        
 
     //checking if this position is already exist in the invoice and adding new position if not exist
         if (empty($invoicePositionArray) ) { 
@@ -151,6 +151,7 @@ class InvoiceEditController extends AbstractController
         }
         else {
     // changing the quantity for +1 
+            $invoicePosition =  $invoicePositionArray[0];
             $quantity=$invoicePosition->getQuantity();
             $invoicePosition->setQuantity($quantity + 1);
         }
