@@ -25,6 +25,11 @@ class InvoicePosition
      */
     private $position;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $quantity;
+
     
     public function getInvoice(): ?Invoice
     {
@@ -46,6 +51,18 @@ class InvoicePosition
     public function setPosition(?Position $position): self
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }

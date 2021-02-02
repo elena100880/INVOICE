@@ -47,6 +47,7 @@ class InvoiceController extends AbstractController
                                         -> select('i')
                                         -> from ('App\Entity\Invoice', 'i')
                                         -> orderBy('i.id', 'DESC');
+                                        
         $invoices  = $queryBuilder->getQuery()->getResult();
         
         $contents = $this->renderView('invoices/invoices.html.twig', [
