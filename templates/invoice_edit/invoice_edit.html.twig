@@ -22,14 +22,21 @@
             <tr>
                 <th>Position ID</th> <th>Name of the position</th> <th>Value of the position</th> <th>Quantity</th>  <th>DELETE</th> 
                         
-                {% for invoicePosition in invoicePositions %}
+                {% for Position in invoicePositions %}
                     <tr>
-                        <td>{{invoicePosition.getId }}</td>
-                        <td>{{invoicePosition.getName }}</td>
-                        <td>{{invoicePosition.getValue}}</td>
-                        <td>1</td>
+                        <td>{{Position.getId }}</td>
+                        <td>{{Position.getName }}</td>
+                        <td>{{Position.getValue}}</td>
                         <td>
-                            <a class="button" href="{{ path('position_delete', {id_invoice: invoice.id, id_position: invoicePosition.getId }) }}"><span id="plus_minus"> &#8722   </span> </a>  
+                            {% set quantity = 0 %}
+                            {% for invoicePosition in Position.getPositionInvoice %}
+
+                                {% set quantity = quantity + invoicePosition.getQuantity %}
+
+                            {% endfor %} {{quantity}}
+                        </td>
+                        <td>
+                            <a class="button" href="{{ path('position_delete', {id_invoice: invoice.id, id_position: Position.getId }) }}"><span id="plus_minus"> &#8722   </span> </a>  
                         </td> 
                     </tr>
                 {% endfor %} 
@@ -38,9 +45,14 @@
 
         <h1>Sum: 
                 {% set sum = 0 %}
-                {% for invoicePosition in invoicePositions %}
-                    
-                    {% set sum = sum + invoicePosition.getValue %}
+                {% for Position in invoicePositions %}
+
+                    {% set quantity1 = 0 %}
+                    {% for invoicePosition in Position.getPositionInvoice %}
+                        {% set quantity1 = quantity1 + invoicePosition.getQuantity %}
+                    {% endfor %}
+
+                    {% set sum = sum + Position.getValue * quantity1 %}
 
                 {% endfor %} {{sum}}. </h1>
 
