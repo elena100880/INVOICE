@@ -30,7 +30,9 @@
                             {% set quantity = 0 %}
                             {% for invoicePosition in Position.getPositionInvoice %}
 
-                                {% set quantity = quantity + invoicePosition.getQuantity %}
+                                {% if invoice == invoicePosition.getInvoice %}
+                                    {% set quantity = quantity + invoicePosition.getQuantity %}
+                                {% endif %}
 
                             {% endfor %} {{quantity}}
                         </td>
@@ -53,7 +55,9 @@
 
                     {% set quantity1 = 0 %}
                     {% for invoicePosition in Position.getPositionInvoice %}
-                        {% set quantity1 = quantity1 + invoicePosition.getQuantity %}
+                        {% if invoice == invoicePosition.getInvoice %}
+                            {% set quantity1 = quantity1 + invoicePosition.getQuantity %}
+                        {% endif %}
                     {% endfor %}
 
                     {% set sum = sum + Position.getValue * quantity1 %}
