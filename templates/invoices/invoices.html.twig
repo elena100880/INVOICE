@@ -23,7 +23,19 @@
                         <td> {{invoice.id}} </td>
                         <td> {{invoice.supplier}} </td>
                         <td> {{invoice.recipient}} </td>
-                        <td> -- </td>
+                        <td> 
+                           
+                            {% set sum2 = 0 %}
+
+                            {% for invoicePosition in invoice.getInvoicePosition %}
+                                {% if invoice == invoicePosition.getInvoice %}                                  
+                                    {% set sum2 = sum2 + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
+                                {% endif %}
+                            {% endfor %}
+            
+                            {{sum2}}
+   
+                        </td>
                         <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">add the positions to the invoice  >></a></td>
                     </tr>
                 {% endfor %}   
