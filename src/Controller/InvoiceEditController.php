@@ -100,9 +100,8 @@ class InvoiceEditController extends AbstractController
             }
             if (isset($name)) {
                 $name=$name->getName();
-                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('pos.name'), ':name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('name', $name)
+                                            ->andwhere ('pos.name = :name');
             }
             $positions = $queryBuilder->getQuery()->getResult();
 

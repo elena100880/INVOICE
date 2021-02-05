@@ -47,8 +47,12 @@ class InvoiceController extends AbstractController
                                         -> select('i')
                                         -> from ('App\Entity\Invoice', 'i')
                                         -> orderBy('i.id', 'DESC');
-                                        
         $invoices  = $queryBuilder->getQuery()->getResult();
+
+// getting array of positions associated with the invoices with two join query:
+
+
+
         
         $contents = $this->renderView('invoices/invoices.html.twig', [
                 
