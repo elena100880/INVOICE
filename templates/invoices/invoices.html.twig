@@ -8,9 +8,9 @@
     
     <h1>Add New Invoice</h1>   
 
-    {{form(form)}}
+        {{form(form)}}
 
-    <button type="button"><a class="button" href="{{ path('invoices') }}">Renew the list</a></button>
+    <button type="button"><a class="button" href="{{ path('invoices') }}">Show / Renew all invoices</a></button>
 
     <h1>List of Invoices:</h1> 
             <table>
@@ -18,25 +18,39 @@
                     <th>ID of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>ADD Positions</th>
                 </tr>
                 
-                {% for invoice in invoices %} 
+                {% for invoice in invoices %}   {# TODO: risk 500??? , pagination??? #}
                     <tr>
                         <td> {{invoice.id}} </td>
                         <td> {{invoice.supplier}} </td>
                         <td> {{invoice.recipient}} </td>
                         <td> 
                            
-                            {% set sum2 = 0 %}
+                            {% set sum = 0 %}
 
-                            {% for invoicePosition in invoice.getInvoicePosition %}
-                                {% if invoice == invoicePosition.getInvoice %}                                  
-                                    {% set sum2 = sum2 + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
+                            {% for invoicePosition in invoice.getInvoicePosition %}  
+
+                            {#    {% if invoice == invoicePosition.getInvoice %} - unnecessary!! #}
+
+                                    {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
+
+                            {#    {% endif %}    #}
+
+                            {% endfor %} 
+
+                            
+                        {# version with iteration on all positionInvoices - not good at all:
+
+                            {% for positionInvoice in positionInvoices %}   TODO: risk 500 ???
+                                {% if invoice == positionInvoice.getInvoice %}                                  
+                                    {% set sum = sum + positionInvoice.getQuantity * positionInvoice.getPosition.getValue %}
                                 {% endif %}
-                            {% endfor %}
+                            {% endfor %}     #}
+                            
             
-                            {{sum2}}
+                            {{sum}}
    
                         </td>
-                        <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">add the positions to the invoice  >></a></td>
+                        <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>
                     </tr>
                 {% endfor %}   
             </table>

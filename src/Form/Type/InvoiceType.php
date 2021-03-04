@@ -13,9 +13,9 @@ class InvoiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('supplier', TextType::class, ['label'=>'Supplier:', 
+            ->add('supplier', TextType::class, ['label'=>'Add Supplier:', 
                                                  ])
-            ->add('recipient', TextType::class, ['label'=>'Recipient:',
+            ->add('recipient', TextType::class, ['label'=>'Add Recipient:',
                                                 ])
         ;
     }

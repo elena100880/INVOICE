@@ -48,9 +48,9 @@ class InvoiceEditController extends AbstractController
             return $this->redirectToRoute('invoices');
         }
 
-    //making array of Positions objects in Invoice    
-        $invoiceHavePositions = $invoice->getInvoicePosition();
-        $invoicePositions = array();
+    //making array of Positions objects in Invoice     - todo: 500 risk????
+        $invoiceHavePositions = $invoice->getInvoicePosition();  //collection of Invoice_position objects associated to this invoice
+        $invoicePositions = array();                             // array of Position objects  associated to this invoice
         foreach ($invoiceHavePositions as $invoiceHavePosition) {
             array_push($invoicePositions, $invoiceHavePosition->getPosition());
         }
@@ -70,7 +70,7 @@ class InvoiceEditController extends AbstractController
                                                             'required' => false,
                                                             'placeholder'=>"all"
                                                             ] )
-                        ->add('send', SubmitType::class, ['label'=>'Show positions'])
+                        ->add('send', SubmitType::class, ['label'=>'Show chosen positions'])
                         ->getForm();
 
         $form->handleRequest($request);

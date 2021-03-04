@@ -29,7 +29,7 @@ class InvoiceController extends AbstractController
     
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice)
-                ->add('send', SubmitType::class, ['label'=>'Add new invoice']);
+                        ->add('send', SubmitType::class, ['label'=>'Add new invoice']);
 
         $form->handleRequest($request);
        
@@ -46,18 +46,40 @@ class InvoiceController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                         -> select('i')
                                         -> from ('App\Entity\Invoice', 'i')
-                                        -> orderBy('i.id', 'DESC');
-        $invoices  = $queryBuilder->getQuery()->getResult();
+                                        -> orderBy('i.id', 'ASC');
+        $invoices  = $queryBuilder->getQuery()->getResult();    //TODO: pagination????
 
-// getting array of positions associated with the invoices with two join query:
+//STUDY !!:
+// getting array of positions associated with the invoices with two join query: - so were chosen only the Positions-objects, which are present in invoices (for all invoices in this case)
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                        -> select('p', 'pi', 'i')
+                                        -> from ('App\Entity\Position', 'p')
+                                        -> join ('p.positionInvoice', 'pi')
+                                        -> join ('pi.invoice', 'i')
+                                        -> orderBy('i.id', 'ASC');
+        $positions  = $queryBuilder->getQuery()->getResult();   
+
+// getting array of positionInvoices associated with the invoices (WHERE for invoices must be added here): (instead of getting Collection with getInvoicePosition()-method)
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                        -> select('pi', 'i')
+                                        -> from ('App\Entity\InvoicePosition', 'pi')
+                                        -> join ('pi.invoice', 'i');
+                                        //-> orderBy('i.id', 'ASC');
+        $positionInvoices  = $queryBuilder->getQuery()->getResult();   
+
+// getting array of positionInvoices withot join-to-invoice as here is no WHERE-condition for the invoice, we use ALL invoices, so - ALL posInvoices-objects: (instead of getting Collection with getInvoicePosition()-method)
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                        -> select('pi')
+                                        -> from ('App\Entity\InvoicePosition', 'pi');
+        $positionInvoices  = $queryBuilder->getQuery()->getResult();   //TODO: pagination???? 
 
 
-
-        
         $contents = $this->renderView('invoices/invoices.html.twig', [
                 
             'form' => $form->createView(),
             'invoices' => $invoices,
+            'positions' => $positions,
+            'positionInvoices' => $positionInvoices,
                 
             ]);
         return new Response ($contents);
