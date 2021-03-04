@@ -6,7 +6,7 @@
 
 {% block content %}
     
-    <h1>Add New Invoice</h1>   
+    <h1>Choose invoicesAdd New Invoice</h1>   
 
         {{form(form)}}
 
@@ -21,8 +21,8 @@
                 {% for invoice in invoices %}   {# TODO: risk 500??? , pagination??? #}
                     <tr>
                         <td> {{invoice.id}} </td>
-                        <td> {{invoice.supplier}} </td>
-                        <td> {{invoice.recipient}} </td>
+                        <td> {{invoice.supplier.name}} </td>
+                        <td> {{invoice.recipient.name}} {{invoice.recipient.family}}</td>
                         <td> 
                            
                             {% set sum = 0 %}
