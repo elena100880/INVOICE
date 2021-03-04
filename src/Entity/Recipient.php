@@ -32,6 +32,16 @@ class Recipient
      */
     private $address;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="recipient")
+     */
+    private $invoices;
+
+    public function __construct()
+    {
+        $this->invoices = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +79,37 @@ class Recipient
     public function setAddress(string $address): self
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Invoice[]
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): self
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices[] = $invoice;
+            $invoice->setRecipient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): self
+    {
+        if ($this->invoices->contains($invoice)) {
+            $this->invoices->removeElement($invoice);
+            // set the owning side to null (unless already changed)
+            if ($invoice->getRecipient() === $this) {
+                $order->setRecipient(null);
+            }
+        }
 
         return $this;
     }

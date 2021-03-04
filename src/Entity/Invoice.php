@@ -26,7 +26,8 @@ class Invoice
     private $supplier;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * * @ORM\ManyToOne(targetEntity=Recipient::class, inversedBy="invoices")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $recipient;
 
