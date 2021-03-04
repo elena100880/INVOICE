@@ -2,22 +2,19 @@ Test exercise.
 
 You can launch the project (after uploading and executing composer install) with 'docker-compose up' command.
 
-
 Then open http://localhost/index.php/<route_path>.
+
+Used: SQLite,
 
 
 There are two pages:  http://localhost/index.php/invoices and  http://localhost/index.php/invoice/edit/{id_invoice} 
                       (available by link from http://localhost/index.php/invoices).
                       
-As there is a plain functional without pages for  Adding/Editing such entities as Position/Supplier/Recipient in project - data.db(SQLite) file with example-tables of positions/suppliers/recipients are added to the repository.
+As there is a plain functional without pages for  Adding/Editing such entities as Position/Supplier/Recipient - /var/data.db(SQLite) file with filled example-tables of positions/suppliers/recipients are added to the repository.
 
 
 
-
-
-
-
-
+---------------------------------------
 
 
 Initial task:
