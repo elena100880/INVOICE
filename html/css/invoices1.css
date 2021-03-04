@@ -9,7 +9,7 @@
 #form > div{
 	margin-top: 0px;
 }
-button {
+button[type='submit'], button#all {
 	color: black;
 	margin: 20px 10px 20px 10px;
 	padding: 10px;
@@ -27,12 +27,14 @@ label {
 	width: 200px;
 	box-sizing: content-box;
 }
-input, textarea {
+
+input, select, option {
 	color: black;
 	width: 250px;
 	padding: 2px;
 	box-sizing: content-box;
 }
+
 table {
 	margin-bottom: 10px;
 	border-collapse: collapse;
@@ -41,6 +43,9 @@ td, th {
 	border: 1px solid green;
 	border-collapse: collapse;
 	padding: 5px;
+}
+span {
+	color: black;
 }
 
 

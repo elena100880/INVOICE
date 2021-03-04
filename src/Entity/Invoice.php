@@ -46,24 +46,24 @@ class Invoice
         return $this->id;
     }
 
-    public function getSupplier(): ?string
+    public function getSupplier(): ?Supplier
     {
         return $this->supplier;
     }
 
-    public function setSupplier(string $supplier): self
+    public function setSupplier(?Supplier $supplier): self
     {
         $this->supplier = $supplier;
 
         return $this;
     }
 
-    public function getRecipient(): ?string
+    public function getRecipient(): ?Recipient
     {
         return $this->recipient;
     }
 
-    public function setRecipient(string $recipient): self
+    public function setRecipient(?Recipient $recipient): self
     {
         $this->recipient = $recipient;
 

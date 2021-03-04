@@ -16,3 +16,7 @@ position_add:
 position_delete:
             path: /position/delete/{id_invoice}/{id_position}
             controller: App\Controller\InvoiceEditController::position_delete
+
+ajax_search_invoice_supplier:
+            path: /ajax/search/invoice/supplier
+            controller: App\Controller\AjaxSearchController::ajax_search_invoice_supplier
