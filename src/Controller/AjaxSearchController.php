@@ -43,18 +43,19 @@ class AjaxSearchController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                                 -> select('s')
                                                 -> from ('App\Entity\Supplier', 's')
-                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
-                                                -> where ('s.name LIKE :key');
-        $suppliers = $queryBuilder->getQuery()->getResult();
+                                                -> setParameter('key1', '%'.addcslashes($key, '%_').'%') 
+                                                -> setParameter('key2', addcslashes($key, '%_').'%') 
+                                                -> orWhere ('s.name LIKE :key1')
+                                                -> orWhere ('s.nip LIKE :key2');
+        $suppliers = $queryBuilder->getQuery()->getResult();     // 500 risk?????
 
         $returnArray=array();
-        foreach($suppliers as $supplier) {
+        foreach($suppliers as $supplier) {                  // 500 risk?????
             $name = strtolower($supplier->getName() );
             $nip = $supplier->getNip();
             $id = $supplier->getId();
             $elem = [ 'id' => $id, 'text' => $name.', nip: '.$nip];
             array_push ($returnArray, $elem );
-            
         };
         return $this->json($returnArray);
     }

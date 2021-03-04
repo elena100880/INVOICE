@@ -51,7 +51,7 @@ class InvoiceController extends AbstractController
                                             -> select('i')
                                             -> from ('App\Entity\Invoice', 'i');
                                             //-> orderBy('i.id', 'ASC')
-            $invoices  = $queryBuilder->getQuery()->getResult();    //TODO: pagination????
+            $invoices  = $queryBuilder->getQuery()->getResult();                    //TODO: pagination????
 
         }
 

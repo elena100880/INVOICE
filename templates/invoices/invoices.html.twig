@@ -28,13 +28,7 @@
                             {% set sum = 0 %}
 
                             {% for invoicePosition in invoice.getInvoicePosition %}  
-
-                            {#    {% if invoice == invoicePosition.getInvoice %} - unnecessary!! #}
-
-                                    {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
-
-                            {#    {% endif %}    #}
-
+                               {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
                             {% endfor %} 
 
                             
