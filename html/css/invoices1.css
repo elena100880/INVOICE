@@ -32,7 +32,12 @@ input, select, option, textarea {
 	padding: 2px;
 	box-sizing: content-box;
 }
-
+input[type='radio']{
+	width: 10px;
+}
+label.required {
+	width: 90px;
+}
 table {
 	margin-bottom: 10px;
 	border-collapse: collapse;

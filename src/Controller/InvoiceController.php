@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-//use Symfony\Component\Form\Extension\Core\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -39,7 +39,16 @@ class InvoiceController extends AbstractController
     {  
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
-           
+
+                        ->add ('empty_positions', ChoiceType::class, ['mapped' => false,
+                                                                        'label' => ' ',
+                                                                        'expanded' =>true,
+                                                                        //'multiple' => true,
+                                                                        'choices' => [  'envoices with no positions' => 1,
+                                                                                        'envoices with positions' => 2,
+                                                                                        'all envoices' => 3],
+                                                                        'data' => 3,
+                                                                        'mapped' =>false ])
                         ->add('invoice_filter', HiddenType::class, ['mapped' => false])
                         ->add('send', SubmitType::class, ['label'=>'Show chosen invoices']);
 
@@ -69,6 +78,9 @@ class InvoiceController extends AbstractController
             if (empty($suppliersId) and empty($recipientsId) and empty($positionsId) ){
                 $invoices = array();
             }
+            //elseif{
+//
+  //          }
             else {
                 $entityManager = $this->getDoctrine()->getManager();
                 $queryBuilder = $entityManager->createQueryBuilder()
