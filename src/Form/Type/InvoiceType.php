@@ -52,11 +52,13 @@ class InvoiceType extends AbstractType
                                                         'attr' => array('class' => 'js-select2-invoice-recipient')   
                                                 ])
 
-            /*->add('invoicePosition', TextType::class, [ 'label'=>'Position:',
+            ->add('invoicePosition', EntityType::class, ['label'=>'Position (type Name or Value):',
+                                                        'class' => Position::class,
+                                                        'choices' =>[],
                                                         'required' => false,
-                                                    ])  */
-
-            
+                                                        'multiple' => true,
+                                                        'attr' => array('class' => 'js-select2-invoice-position')   
+                                        ])
         ;
 
         $builder->addEventListener(
@@ -68,7 +70,7 @@ class InvoiceType extends AbstractType
                 $data = $event->getData();
                 $form = $event->getForm();
              
-                if ($form->has('invoice')) {   
+                if ($form->has('invoice_filter')) {   
                     $form->add  ('supplier', EntityType::class,  [ 
                                                                 'label'=>'Supplier (type Name or NIP):',
                                                                 'class' => Supplier::class,
@@ -80,12 +82,15 @@ class InvoiceType extends AbstractType
                                                                                     return $er  ->createQueryBuilder('s')
                                                                                                 -> where ('s.id in (:suppliersId)')
                                                                                                 -> setParameter('suppliersId', $data['supplier']);
-                                                                                }
-                                                                            }, 
+                                                                                    }
+                                                                                    else return $er ->createQueryBuilder('s')
+                                                                                                    -> where ('s.id = :id')
+                                                                                                    -> setParameter('id', 0);
+                                                                                    }, 
                                                                     
-                                                                'choice_label' => function ($invoice) {
-                                                                        return $invoice->getName().' NIP: '.$invoice->getNip();
-                                                                        },
+                                                                'choice_label' => function ($supplier) {
+                                                                                            return $supplier->getName().' NIP: '.$supplier->getNip();
+                                                                                        },
 
                                                                 'mapped' => false,
                                                                 'multiple' => true,
@@ -96,28 +101,53 @@ class InvoiceType extends AbstractType
                                                                     'class' => Recipient::class,
                                                                     'required' => false,
     
-                                                                    'query_builder' => function (RecipientRepository $er) use ($data) {
-                                                                                
-                                                                                        if (isset($data['recipient'])) {
+                                                                    'query_builder' => function (RecipientRepository $er) use ($data) 
+                                                                                {                                                                   
+                                                                                    if (isset($data['recipient'])) {
                                                                                         return $er  ->createQueryBuilder('r')
                                                                                                     -> where ('r.id in (:recipientsId)')
                                                                                                     -> setParameter('recipientsId', $data['recipient']);
                                                                                     }
+                                                                                    else return $er ->createQueryBuilder('r')
+                                                                                                    -> where ('r.id = :id')
+                                                                                                    -> setParameter('id', 0);
                                                                                 }, 
                                                                         
-                                                                    'choice_label' => function ($invoice) {
-                                                                            return $invoice->getName().', '.$invoice->getFamily().', '.$invoice->getAddress();
+                                                                    'choice_label' => function ($recipient) {
+                                                                            return $recipient->getName().', '.$recipient->getFamily().', '.$recipient->getAddress();
                                                                             },
     
                                                                     'mapped' => false,
                                                                     'multiple' => true,
                                                                     'attr' => array('class' => 'js-select2-invoice-recipient')   ]);
 
-                   
+                    $form->add  ('invoicePosition', EntityType::class, [ 
+                                                                    'label'=>'Position (type Name or Value):',
+                                                                    'class' => Position::class,
+                                                                    'required' => false,
+        
+                                                                    'query_builder' => function (PositionRepository $er) use ($data) 
+                                                                                {    
+                                                                                    if (isset($data['invoicePosition'])) {
+                                                                                        return $er  ->createQueryBuilder('pi')
+                                                                                                    -> where ('pi.id in (:poditionsId)')
+                                                                                                    -> setParameter('poditionsId', $data['invoicePosition']);
+                                                                                    }
+                                                                                    else return $er ->createQueryBuilder('pi')
+                                                                                                    -> where ('pi.id = :id')
+                                                                                                    -> setParameter('id', 0);
+                                                                                }, 
+                                                                            
+                                                                        'choice_label' => function ($position) {
+                                                                                return $position->getName().', '.$position->getValue().'zł';
+                                                                                },
+        
+                                                                        'mapped' => false,
+                                                                        'multiple' => true,
+                                                                        'attr' => array('class' => 'js-select2-invoice-position')   ]);
                 }
             }
         );
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

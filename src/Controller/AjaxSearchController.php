@@ -85,6 +85,34 @@ class AjaxSearchController extends AbstractController
         return $this->json($returnArray);
     }
 
+    public function ajax_search_invoice_position(Request $request) : Response {
+        $key = $request->query->get('q'); 
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('p')
+                                                -> from ('App\Entity\Position', 'p')
+                                                -> setParameter('key1', '%'.addcslashes($key, '%_').'%')
+                                                -> setParameter('key2', addcslashes($key, '%_').'%') 
+                                                -> orWhere ('p.name LIKE :key1')
+                                                -> orWhere ('p.value LIKE :key2');
+                                                
+        $positions = $queryBuilder->getQuery()->getResult();     // 500 risk?????
+
+        $returnArray=array();
+        foreach($positions as $position) {                  // 500 risk?????
+            $name = $position->getName();
+            $value = $position->getValue();
+
+            //$positionInvoice = $position->getPositionInvoice();
+                        
+            $id = $position->getId();
+            $elem = [ 'id' => $id, 'text' => $name.', '.$value.'zł'];
+            array_push ($returnArray, $elem );
+        };
+        return $this->json($returnArray);
+    }
+
 
 }
     

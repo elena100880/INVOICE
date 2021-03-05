@@ -40,7 +40,7 @@
                         </td>
                         <td> 
                             {% for invoicePosition in invoice.getInvoicePosition %}  
-                               {{invoicePosition.getPosition.getName }} <br>
+                               {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
                             {% endfor %} 
                         </td>
                         <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>

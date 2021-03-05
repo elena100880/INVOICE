@@ -90,6 +90,35 @@
                     });
                 })
             </script>
+
+            <script>
+                $(document).ready(function() {
+                    $('.js-select2-invoice-position').select2({
+                        ajax: {
+                            url: '/ajax/search/invoice/position',
+                            dataType: 'json',
+                            delay: 350,
+                            
+                            data: function (params) {
+                                return {
+                                    q: params.term,
+                                    
+                                }; 
+                            },
+                            processResults: function (data) { 
+                                
+                                return {
+                                    results: data,
+                                    
+                                };   
+                            },
+                        },
+                        minimumInputLength: 2,
+                        allowClear: true,
+                        placeholder: '',
+                    });
+                })
+            </script>
            
         {% endblock %}
     </body>

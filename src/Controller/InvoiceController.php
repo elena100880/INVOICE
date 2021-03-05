@@ -40,9 +40,8 @@ class InvoiceController extends AbstractController
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
            
-                        ->add('invoice', HiddenType::class, ['mapped' => false])
-                        ->add('send', SubmitType::class, ['label'=>'Show chosen invoices'
-                                                            ]);
+                        ->add('invoice_filter', HiddenType::class, ['mapped' => false])
+                        ->add('send', SubmitType::class, ['label'=>'Show chosen invoices']);
 
         $form->handleRequest($request);
        
@@ -50,6 +49,7 @@ class InvoiceController extends AbstractController
             
             $suppliersCollection = $form->get('supplier')->getData();
             $recipientsCollection = $form->get('recipient')->getData();
+            $positionsCollection = $form->get('invoicePosition')->getData();
 
             $suppliersId=array();
             foreach ($suppliersCollection as $supplier) {
@@ -60,28 +60,95 @@ class InvoiceController extends AbstractController
             foreach ($recipientsCollection as $recipient) {
                 array_push($recipientsId, $recipient->getId());
             }
-            
 
+            $positionsId=array();
+            foreach ($positionsCollection as $position) {
+                array_push($positionsId, $position->getId());
+            }
+            
+            if (empty($suppliersId) and empty($recipientsId) and empty($positionsId) ){
+                $invoices = array();
+            }
+            else {
+                $entityManager = $this->getDoctrine()->getManager();
+                $queryBuilder = $entityManager->createQueryBuilder()
+                                                                -> select('i', 's', 'r')
+                                                                -> from ('App\Entity\Invoice', 'i')
+                                                                -> join ('i.supplier', 's')
+                                                                -> join ('i.recipient', 'r')
+
+                                                                
+
+                                                                -> orderBy('i.id', 'DESC');
+                                if (!empty($suppliersId)) {
+                                    $queryBuilder=$queryBuilder -> andWhere ('s.id in (:suppliersId)')
+                                                                -> setParameter('suppliersId', $suppliersId);
+                                                    }
+                                if (!empty($recipientsId)) {
+                                    $queryBuilder=$queryBuilder -> andWhere ('r.id in (:recipientsId)')
+                                                                -> setParameter('recipientsId', $recipientsId);
+                                                    }
+                                if (!empty($positionsId)) {
+                                    $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip')
+                                                                -> join ('ip.position', 'p')
+                                                                -> andWhere ('p.id in (:positionsId)')
+                                                                -> setParameter('positionsId', $positionsId);
+                                                    }
+                $invoices  = $queryBuilder->getQuery()->getResult();    //this invoices have only associated InvoicePosition-objects in them;
+                                                                            //  that is: only InvoicePosition-objects with positions-id
+                                                                            //which was chosen in Position filter
+
+                                                                            //also - 500 risk here ??? TODO: pagination????
+
+                //adding missing InvoicePosition-objects to filtered above $invoices (if Position field is not empty): 
+
+                    //  TODO!!!! - Mayby there is another way to do this - more complicated above query???
+
+                if (!empty($positionsId)) {
+
+                    $invoices2 = array();
+                    foreach ($invoices as $invoice) {               //also - 500 risk here ??? TODO: pagination????
+                        $invoiceId = $invoice->getId();
+
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $queryBuilder = $entityManager->createQueryBuilder()
+                                                                        -> select('ip', 'i')
+                                                                        -> from ('App\Entity\InvoicePosition', 'ip')
+                                                                        -> join ('ip.invoice', 'i')
+                                                                        -> andWhere ('i.id = :invoiceId')
+                                                                        -> setParameter('invoiceId', $invoiceId);
+                            
+                        $invoicePositions = $queryBuilder->getQuery()->getResult(); 
+
+                        foreach ($invoicePositions as $invoicePosition) {
+                            $invoice->addInvoicePosition($invoicePosition);    
+                        };
+
+                            array_push($invoices2, $invoice);
+                        }
+                    $invoices = $invoices2;
+                }
+            }
+        }  
+        
+            
+        /* $invoicesId=array();
+            foreach ($invoices as $invoice) {
+                array_push($invoicesId, $invoice->getId());
+            }
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                                        -> select('i', 's', 'r')
-                                                        -> from ('App\Entity\Invoice', 'i')
-                                                        -> join ('i.supplier', 's')
-                                                        -> join ('i.recipient', 'r')
-                                                        -> orderBy('i.id', 'DESC');
-                        if (!empty($suppliersId)) {
-                            $queryBuilder=$queryBuilder -> andWhere ('s.id in (:suppliersId)')
-                                                        -> setParameter('suppliersId', $suppliersId);
-                                            }
-                        if (!empty($recipientsId)) {
-                            $queryBuilder=$queryBuilder -> andWhere ('r.id in (:recipientsId)')
-                                                        -> setParameter('recipientsId', $recipientsId);
-                                            }
-
-            $invoices  = $queryBuilder->getQuery()->getResult();       //TODO: pagination????
+                                                        -> select('ip', 'i')
+                                                        -> from ('App\Entity\InvoicePosition', 'ip')
+                                                        -> join ('ip.invoice', 'i');
+                        if (!empty($positionsId)) {
+                            $queryBuilder=$queryBuilder -> andWhere ('i.id in (:invoicesId)')
+                                                        -> setParameter('invoicesId', $invoicesId);
+                                                }
+            $invoicePositions = $queryBuilder->getQuery()->getResult();         
+        */                    
         
-        }  
-
+        
         else {
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -122,7 +189,7 @@ class InvoiceController extends AbstractController
                 
             'form' => $form->createView(),
             'invoices' => $invoices,
-            
+                        
             ]);
         return new Response ($contents);
     }

@@ -24,3 +24,7 @@ ajax_search_invoice_supplier:
 ajax_search_invoice_recipient:
             path: /ajax/search/invoice/recipient
             controller: App\Controller\AjaxSearchController::ajax_search_invoice_recipient
+
+ajax_search_invoice_position:
+            path: /ajax/search/invoice/position
+            controller: App\Controller\AjaxSearchController::ajax_search_invoice_position
