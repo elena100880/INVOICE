@@ -21,7 +21,6 @@ use App\Entity\Position;
 use App\Entity\InvoicePosition;
 use App\Entity\Invoice;
 
-
 use App\Repository\SupplierRepository;
 use App\Repository\RecipientRepository;
 use App\Repository\InvoiceRepository;
@@ -51,10 +50,36 @@ class AjaxSearchController extends AbstractController
 
         $returnArray=array();
         foreach($suppliers as $supplier) {                  // 500 risk?????
-            $name = strtolower($supplier->getName() );
+            $name = $supplier->getName();
             $nip = $supplier->getNip();
             $id = $supplier->getId();
             $elem = [ 'id' => $id, 'text' => $name.', nip: '.$nip];
+            array_push ($returnArray, $elem );
+        };
+        return $this->json($returnArray);
+    }
+
+    public function ajax_search_invoice_recipient(Request $request) : Response {
+        $key = $request->query->get('q'); 
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('r')
+                                                -> from ('App\Entity\Recipient', 'r')
+                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> orWhere ('r.name LIKE :key')
+                                                -> orWhere ('r.family LIKE :key')
+                                                -> orWhere ('r.address LIKE :key');
+        $recipients = $queryBuilder->getQuery()->getResult();     // 500 risk?????
+
+        $returnArray=array();
+        foreach($recipients as $recipient) {                  // 500 risk?????
+            $name = $recipient->getName();
+            $family = $recipient->getFamily();
+            $address = $recipient->getAddress();
+            
+            $id = $recipient->getId();
+            $elem = [ 'id' => $id, 'text' => $name.' '.$family.', '.$address];
             array_push ($returnArray, $elem );
         };
         return $this->json($returnArray);

@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+//use Symfony\Component\Form\Extension\Core\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -13,6 +15,15 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\AbstractType;
 
+use App\Entity\Supplier;
+use App\Entity\Recipient;
+use App\Entity\Position;
+use App\Entity\InvoicePosition;
+
+use App\Repository\SupplierRepository;
+use App\Repository\RecipientRepository;
+use App\Repository\PositionRepository;
+use App\Repository\InvoicePositionRepository;
 
 use App\Entity\Invoice;
 use App\Form\Type\InvoiceType;
@@ -27,21 +38,48 @@ class InvoiceController extends AbstractController
     public function invoices(Request $request) : Response
     {  
         $invoice = new Invoice();
-        $form = $this->createForm (InvoiceType::class, $invoice)
-
+        $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
+           
+                        ->add('invoice', HiddenType::class, ['mapped' => false])
                         ->add('send', SubmitType::class, ['label'=>'Show chosen invoices'
                                                             ]);
 
         $form->handleRequest($request);
        
         if ($form->isSubmitted()) {
-            $invoiceManager = $this->getDoctrine()->getManager();
             
+            $suppliersCollection = $form->get('supplier')->getData();
+            $recipientsCollection = $form->get('recipient')->getData();
+
+            $suppliersId=array();
+            foreach ($suppliersCollection as $supplier) {
+                array_push($suppliersId, $supplier->getId());
+            }
+
+            $recipientsId=array();
+            foreach ($recipientsCollection as $recipient) {
+                array_push($recipientsId, $recipient->getId());
+            }
             
-            /*$invoiceManager->persist($invoice);
-            $invoiceManager->flush();
-            $id=$invoice->getId();
-            return $this->redirectToRoute('invoice_edit', ['id_invoice'=> $id] );   */
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $queryBuilder = $entityManager->createQueryBuilder()
+                                                        -> select('i', 's', 'r')
+                                                        -> from ('App\Entity\Invoice', 'i')
+                                                        -> join ('i.supplier', 's')
+                                                        -> join ('i.recipient', 'r')
+                                                        -> orderBy('i.id', 'DESC');
+                        if (!empty($suppliersId)) {
+                            $queryBuilder=$queryBuilder -> andWhere ('s.id in (:suppliersId)')
+                                                        -> setParameter('suppliersId', $suppliersId);
+                                            }
+                        if (!empty($recipientsId)) {
+                            $queryBuilder=$queryBuilder -> andWhere ('r.id in (:recipientsId)')
+                                                        -> setParameter('recipientsId', $recipientsId);
+                                            }
+
+            $invoices  = $queryBuilder->getQuery()->getResult();       //TODO: pagination????
+        
         }  
 
         else {
@@ -49,8 +87,8 @@ class InvoiceController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('i')
-                                            -> from ('App\Entity\Invoice', 'i');
-                                            //-> orderBy('i.id', 'ASC')
+                                            -> from ('App\Entity\Invoice', 'i')
+                                            -> orderBy('i.id', 'DESC');
             $invoices  = $queryBuilder->getQuery()->getResult();                    //TODO: pagination????
 
         }

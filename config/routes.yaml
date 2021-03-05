@@ -20,3 +20,7 @@ position_delete:
 ajax_search_invoice_supplier:
             path: /ajax/search/invoice/supplier
             controller: App\Controller\AjaxSearchController::ajax_search_invoice_supplier
+
+ajax_search_invoice_recipient:
+            path: /ajax/search/invoice/recipient
+            controller: App\Controller\AjaxSearchController::ajax_search_invoice_recipient

@@ -1,16 +1,12 @@
 .content {
-    width: 1100px;
+    width: 1000px;
     min-height: 100px;
-	padding-left: 0px;
-	padding-right: 10px;
-	padding-top: 6px;
-	padding-bottom: 20px;
-	
+	padding: 20px;
 }
 #form > div{
 	margin-top: 0px;
 }
-button {
+button[type='submit'], button#all {
 	color: black;
 	margin: 20px 10px 20px 10px;
 	padding: 10px;
@@ -25,15 +21,17 @@ label {
 	padding: 5px;
 	margin: 0;
 	display: inline-block;
-	width: 300px;
+	width: 200px;
 	box-sizing: content-box;
 }
-input, select, option {
+
+input, select, option, textarea {
 	color: black;
 	width: 250px;
 	padding: 2px;
 	box-sizing: content-box;
 }
+
 table {
 	margin-bottom: 10px;
 	border-collapse: collapse;
@@ -43,25 +41,11 @@ td, th {
 	border-collapse: collapse;
 	padding: 5px;
 }
-#invoice {
-	float:left;
-	padding: 25px;
-}
-#form {
-	float:left;
-	padding: 25px;
-}
-#plus_minus {
-	color:red;
-	font-weight: bold;
-	font-size: 200%;
-}
 span {
 	color: black;
 }
-a {
-	text-decoration: none;
-	
+span[dir='ltr'] {
+	width: 250px;
 }
 
 

@@ -1,4 +1,4 @@
-{% extends 'base1.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
     <link rel="stylesheet" href="/css/invoices1.css">
@@ -15,34 +15,33 @@
 
             <table>
                 <tr>
-                    <th>ID of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>ADD Positions</th>
+                    <th>ID<br>of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>Positions</th><th>EDIT Positions</th>
                 </tr>
                 
                 {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? #}
                     <tr>
                         <td> {{invoice.id}} </td>
-                        <td> {{invoice.supplier.name}} </td>
+                        <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
                         <td> {{invoice.recipient.name}} {{invoice.recipient.family}}</td>
                         <td> 
-                           
                             {% set sum = 0 %}
-
                             {% for invoicePosition in invoice.getInvoicePosition %}  
                                {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
                             {% endfor %} 
 
-                            
                         {# version with iteration on all positionInvoices - not good at all:
-
                             {% for positionInvoice in positionInvoices %}   TODO: risk 500 ???
                                 {% if invoice == positionInvoice.getInvoice %}                                  
                                     {% set sum = sum + positionInvoice.getQuantity * positionInvoice.getPosition.getValue %}
                                 {% endif %}
                             {% endfor %}     #}
                             
-            
                             {{sum}}
-   
+                        </td>
+                        <td> 
+                            {% for invoicePosition in invoice.getInvoicePosition %}  
+                               {{invoicePosition.getPosition.getName }} <br>
+                            {% endfor %} 
                         </td>
                         <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>
                     </tr>
