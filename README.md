@@ -9,8 +9,7 @@ Then open **http://localhost/index.php/"route_path"**.
 
    + **http://localhost/index.php/invoices** - invoices: list and filter by Supplier, Recipient, Position.
 
-   + **http://localhost/index.php/invoice/edit/{id_invoice}** - editing the existing invoice, link is available from page `http://localhost/index.php/invoices` for each chosen invoice.
-                      
+  
 As there is a plain functional without pages for  Adding/Editing such entities as Position/Supplier/Recipient - **/var/data.db** file with filled example-tables of positions/suppliers/recipients are added to the repository.
 
 ---------------------------------------
