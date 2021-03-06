@@ -106,16 +106,14 @@ class InvoiceController extends AbstractController
                                                                 -> andWhere ('p.id in (:positionsId)')
                                                                 -> setParameter('positionsId', $positionsId);
                                                     }
-                $invoices  = $queryBuilder->getQuery()->getResult();    //this invoices have only associated InvoicePosition-objects in them;
-                                                                            //  that is: only InvoicePosition-objects with positions-id
-                                                                            //which was chosen in Position filter
+                $invoices  = $queryBuilder->getQuery()->getResult();    // !! this invoices have only associated InvoicePosition-objects in them;
+                                                                        //  that is: filtered invoices have only InvoicePosition-objects with 
+                                                                        //positions-id, which was chosen in Position filter
 
-                                                                            //also - 500 risk here ??? TODO: pagination????
+                                                                        //also - 500 risk here ??? TODO: pagination????
 
                 //adding missing InvoicePosition-objects to filtered above $invoices (if Position field is not empty): 
-
-                    //  TODO!!!! - Mayby there is another way to do this - more complicated above query???
-
+                    //  TODO!!!! - Mayby there is another way to do this - more complicated above query??? or sth else??
                 if (!empty($positionsId)) {
 
                     $invoices2 = array();
