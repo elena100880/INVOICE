@@ -32,6 +32,8 @@ use App\Repository\InvoiceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class InvoiceController extends AbstractController
 {
@@ -43,7 +45,6 @@ class InvoiceController extends AbstractController
                         ->add ('empty_positions', ChoiceType::class, ['mapped' => false,
                                                                         'label' => ' ',
                                                                         'expanded' =>true,
-                                                                        //'multiple' => true,
                                                                         'choices' => [  'envoices with no positions' => 1,
                                                                                         'envoices with positions' => 2,
                                                                                         'all envoices' => 3],
@@ -54,11 +55,13 @@ class InvoiceController extends AbstractController
 
         $form->handleRequest($request);
        
+        $empty_positions = 0;
         if ($form->isSubmitted()) {
             
             $suppliersCollection = $form->get('supplier')->getData();
             $recipientsCollection = $form->get('recipient')->getData();
             $positionsCollection = $form->get('invoicePosition')->getData();
+            $empty_positions = $form->get('empty_positions')->getData();
 
             $suppliersId=array();
             foreach ($suppliersCollection as $supplier) {
@@ -75,37 +78,46 @@ class InvoiceController extends AbstractController
                 array_push($positionsId, $position->getId());
             }
             
-            if (empty($suppliersId) and empty($recipientsId) and empty($positionsId) ){
-                $invoices = array();
-            }
-            //elseif{
-//
-  //          }
-            else {
+            //if (empty($suppliersId) and empty($recipientsId) and empty($positionsId) ){
+            //    $invoices = array();
+            //}
+            
+            //else {
+                $empty = new arrayCollection();
                 $entityManager = $this->getDoctrine()->getManager();
                 $queryBuilder = $entityManager->createQueryBuilder()
                                                                 -> select('i', 's', 'r')
                                                                 -> from ('App\Entity\Invoice', 'i')
                                                                 -> join ('i.supplier', 's')
                                                                 -> join ('i.recipient', 'r')
-
-                                                                
-
                                                                 -> orderBy('i.id', 'DESC');
-                                if (!empty($suppliersId)) {
+                    if (!empty($suppliersId)) {
                                     $queryBuilder=$queryBuilder -> andWhere ('s.id in (:suppliersId)')
                                                                 -> setParameter('suppliersId', $suppliersId);
-                                                    }
-                                if (!empty($recipientsId)) {
+                    }
+                    if (!empty($recipientsId)) {
                                     $queryBuilder=$queryBuilder -> andWhere ('r.id in (:recipientsId)')
                                                                 -> setParameter('recipientsId', $recipientsId);
-                                                    }
-                                if (!empty($positionsId)) {
+                    }
+        //filtering invoices with no positions when empty_positions==1:           
+                   //This filtering is not here but in twig, where empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown
+                   // !!!  TODO: mayby to think out some code in queryBuilder here to filter empty invoices???? not in twig
+
+        //filtering invoices when some poitions were added to the Field-position:
+                    if (  !empty($positionsId) and ($empty_positions == 3 or $empty_positions == 2 or $empty_positions == 1)  ) {
                                     $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip')
                                                                 -> join ('ip.position', 'p')
                                                                 -> andWhere ('p.id in (:positionsId)')
                                                                 -> setParameter('positionsId', $positionsId);
-                                                    }
+                    }
+
+        //filtering invoices with existing positions:           
+                    if ( $empty_positions == 2 and empty($positionsId) ) {
+                                    $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip');
+                                                                
+                    }
+
+
                 $invoices  = $queryBuilder->getQuery()->getResult();    // !! this invoices have only associated InvoicePosition-objects in them;
                                                                         //  that is: filtered invoices have only InvoicePosition-objects with 
                                                                         //positions-id, which was chosen in Position filter
@@ -137,8 +149,8 @@ class InvoiceController extends AbstractController
                             array_push($invoices2, $invoice);
                         }
                     $invoices = $invoices2;
-                }
-            }
+                }   
+            //}
         }  
         
             
@@ -199,6 +211,7 @@ class InvoiceController extends AbstractController
                 
             'form' => $form->createView(),
             'invoices' => $invoices,
+            'empty_positions' => $empty_positions,
                         
             ]);
         return new Response ($contents);

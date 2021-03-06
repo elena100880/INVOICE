@@ -19,6 +19,9 @@
                 </tr>
                 
                 {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? #}
+                {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}
+                        {# Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown #}
+                {% else %}
                     <tr>
                         <td> {{invoice.id}} </td>
                         <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
@@ -45,6 +48,7 @@
                         </td>
                         <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>
                     </tr>
+                {% endif %} 
                 {% endfor %}   
             </table>
        
