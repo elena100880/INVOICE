@@ -68,13 +68,17 @@ class InvoiceAddController extends AbstractController
         if ($form_position->isSubmitted() ) {
             
             $position = $form_position->get('position')->getData();
-            $quantity = $form_position->get('quantity')->getData();
+            $quantityString = $form_position->get('quantity')->getData();
+            $tt = floatval($quantityString) ;
+            $yy = is_numeric($quantityString);
+            $ifInteger = floatval($quantityString) - floor( floatval($quantityString) );
+
 
     //validation:
-            if (!is_numeric($quantity) ) {
+            if (!is_numeric($quantityString) or  $ifInteger != 0) {
                 $integer = false;
             }
-            if ($quantity == '0') {
+            if ($quantityString == '0') {
                 $zero = 0;
             }
                
@@ -84,6 +88,8 @@ class InvoiceAddController extends AbstractController
             else {
                 $note_position = 2;
             }
+
+
             
         }
         
