@@ -1,29 +1,29 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
-    <link rel="stylesheet" href="/css/invoices1.css">
+    <link rel="stylesheet" href="/css/invoice_add.css">
 {% endblock %}
 
 {% block content %}
     
-    <h1>List of Invoices</h1>
-    Choose invoices by:
+    <h1>Choose positions and its quantity: </h1>
 
-        {{form(form)}}
+    <h1>Add Supplier and Recipient: </h1>
+   
+    {{form(form)}}   
 
-    <button type="button" id='all'><a class="button" href="{{ path('invoices') }}">Show all invoices</a></button><br>
+    
+    <a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES  !!!!  >>>>></a><br><br>
 
-    <a href="{{ path('invoice_add') }}">ADD NEW INVOICE  !!!!  >>>>></a><br><br>
-
-            <table>
+        {#    <table>
                 <tr>
                     <th>ID<br>of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>Positions</th><th>EDIT Positions</th>
                 </tr>
                 
                 {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? #}
-                {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}
+            {#    {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}             
                         {# Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown #}
-                {% else %}
+            {#    {% else %}
                     <tr>
                         <td> {{invoice.id}} </td>
                         <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
@@ -41,7 +41,7 @@
                                 {% endif %}
                             {% endfor %}     #}
                             
-                            {{sum}}
+            {#                {{sum}}
                         </td>
                         <td> 
                             {% for invoicePosition in invoice.getInvoicePosition %}  
@@ -52,7 +52,7 @@
                     </tr>
                 {% endif %} 
                 {% endfor %}   
-            </table>
+            </table>           #}
        
         
 {% endblock %}

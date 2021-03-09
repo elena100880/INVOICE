@@ -5,6 +5,10 @@ invoices:
             path: /invoices
             controller: App\Controller\InvoiceController::invoices
 
+invoice_add:
+            path: /invoice/add
+            controller: App\Controller\InvoiceAddController::invoice_add
+
 invoice_edit:
             path: /invoice/edit/{id_invoice}
             controller: App\Controller\InvoiceEditController::invoice_edit

@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 //use Symfony\Component\Form\Extension\Core\Type\EntityType;
 
@@ -145,7 +146,15 @@ class InvoiceType extends AbstractType
                                                                         'mapped' => false,
                                                                         'multiple' => true,
                                                                         'attr' => array('class' => 'js-select2-invoice-position')   ]);
+
+                    
                 }
+
+                /*if (isset($data['invoicePosition'])) {
+                        
+                    $form->add ('empty_positions', HiddenType::class, ['mapped' => false]);
+
+                }*/
             }
         );
     }
