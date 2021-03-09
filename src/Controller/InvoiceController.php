@@ -78,11 +78,8 @@ class InvoiceController extends AbstractController
                 array_push($positionsId, $position->getId());
             }
             
-            //if (empty($suppliersId) and empty($recipientsId) and empty($positionsId) ){
-            //    $invoices = array();
-            //}
+                       
             
-            //else {
                 $empty = new arrayCollection();
                 $entityManager = $this->getDoctrine()->getManager();
                 $queryBuilder = $entityManager->createQueryBuilder()

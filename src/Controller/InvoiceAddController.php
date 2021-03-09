@@ -52,14 +52,12 @@ class InvoiceAddController extends AbstractController
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
                                                                     'class' => Supplier::class,
                                                                     'choices' =>[],
-                                                                    'required' => false,
                                                                     'attr' => array('class' => 'js-select2-invoice-supplier')   
                                                                 ])
 
                         ->add('recipient', EntityType::class, [     'label'=>'Recipient (type Name, Family or Address):',
                                                                     'class' => Recipient::class,
                                                                     'choices' =>[],
-                                                                    'required' => false,
                                                                     'attr' => array('class' => 'js-select2-invoice-recipient')   
                                                             ])
                         ->add('invoicePosition', HiddenType::class, ['mapped' => false])
@@ -68,29 +66,22 @@ class InvoiceAddController extends AbstractController
 
         $form->handleRequest($request);
 
+        $note = 0;
         if ($form->isSubmitted() ) {
             
-            $suppliers = $form->get('supplier')->getData();
-            $recipients = $form->get('recipient')->getData();
-            //$positions = $form->get('invoicePosition')->getData();
-                        
-            $entityManager = $this->getDoctrine()->getManager();
-            $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('pos')
-                                            -> from ('App\Entity\Position', 'pos');
-            if (isset($value)) {
-                $value=$value->getValue();
-                $queryBuilder=$queryBuilder->setParameter('value', $value)
-                                            ->andwhere ('pos.value = :value');
+            $supplier = $form->get('supplier')->getData();
+            $recipient = $form->get('recipient')->getData();
+            
+            if ($supplier == null or $recipient == null) {
+                $note = 1;
             }
-            if (isset($name)) {
-                $name=$name->getName();
-                $queryBuilder=$queryBuilder->setParameter('name', $name)
-                                            ->andwhere ('pos.name = :name');
-            }
-            $positions = $queryBuilder->getQuery()->getResult();
+            else {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($invoice);
+                $entityManager->flush();
+                $note = 2;
+            }       
         }
-
 
     /*        //saving info about chosen/not chosen products (by saving GET form parameters) 
             $request= Request::createFromGlobals();
@@ -100,22 +91,12 @@ class InvoiceAddController extends AbstractController
         }   */
 
 
-    /*
-   
-                
-    //saving info about chosen/not chosen positions (by saving GET 'form' parameters) 
-        $request= Request::createFromGlobals();
-        $requestForm=$request->query->get('form');
-        $this->session->set('sessionForm', $requestForm  );
-                
-    //filtering positions  
-        $positions=array();  */
-
-        
+         
         
         $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
                     
             'form' => $form->createView(),
+            'note' => $note,
             //'positions' => $positions,
             //'invoice' => $invoice,
             //'invoicePositions'=>$invoicePositions,

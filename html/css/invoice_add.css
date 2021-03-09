@@ -7,7 +7,7 @@
 #form > div{
 	margin-top: 0px;
 }
-button[type='submit'], button#all {
+button[type='submit'], button#clear {
 	color: black;
 	margin: 20px 10px 20px 10px;
 	padding: 10px;
@@ -16,6 +16,7 @@ button[type='submit'], button#all {
 	font-weight: bold;
 	background-color: mediumSeaGreen;
 	border: 2px solid black;
+	
 }
 label {
 	color: green;
@@ -36,7 +37,7 @@ input[type='radio']{
 	width: 10px;
 }
 label.required {
-	width: 90px;
+	width: 300px;
 }
 table {
 	margin-bottom: 10px;
@@ -52,6 +53,13 @@ span {
 }
 span[dir='ltr'] {
 	width: 250px;
+}
+.note {
+	color:red;
+	font-weight: bold;
+}
+a {
+	text-decoration: none;
 }
 
 
