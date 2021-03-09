@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
@@ -18,16 +20,18 @@ use Symfony\Component\Form\AbstractType;
 use App\Entity\Supplier;
 use App\Entity\Recipient;
 use App\Entity\Position;
-use App\Entity\InvoicePosition;
 
 use App\Repository\SupplierRepository;
 use App\Repository\RecipientRepository;
 use App\Repository\PositionRepository;
-use App\Repository\InvoicePositionRepository;
 
 use App\Entity\Invoice;
 use App\Form\Type\InvoiceType;
 use App\Repository\InvoiceRepository;
+
+use App\Entity\InvoicePosition;
+use App\Form\Type\InvoicePositionType;
+use App\Repository\InvoicePositionRepository;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +51,43 @@ class InvoiceAddController extends AbstractController
 
     public function invoice_add(Request $request) : Response
     {     
+        $note_position = 0;
+        $note_invoice = 0;
+        $integer = true;
+        $zero = 1;
+
+        $invoicePosition = new InvoicePosition;
+        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition)
+                               
+                                -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
+                                -> add ('send', SubmitType::class, ['label' => 'Add chosen positions']);
+                                
+        $form_position->handleRequest($request);
+        
+        
+        if ($form_position->isSubmitted() ) {
+            
+            $position = $form_position->get('position')->getData();
+            $quantity = $form_position->get('quantity')->getData();
+
+    //validation:
+            if (!is_numeric($quantity) ) {
+                $integer = false;
+            }
+            if ($quantity == '0') {
+                $zero = 0;
+            }
+               
+            if ($position == null) {
+                $note_position = 1;
+            }
+            else {
+                $note_position = 2;
+            }
+            
+        }
+        
+        
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice)
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
@@ -66,20 +107,21 @@ class InvoiceAddController extends AbstractController
 
         $form->handleRequest($request);
 
-        $note = 0;
         if ($form->isSubmitted() ) {
             
             $supplier = $form->get('supplier')->getData();
             $recipient = $form->get('recipient')->getData();
             
+            
+    //validation:        
             if ($supplier == null or $recipient == null) {
-                $note = 1;
+                $note_invoice = 1;
             }
             else {
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($invoice);
                 $entityManager->flush();
-                $note = 2;
+                $note_invoice = 2;
             }       
         }
 
@@ -90,17 +132,16 @@ class InvoiceAddController extends AbstractController
               
         }   */
 
-
-         
-        
+  
         $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
                     
             'form' => $form->createView(),
-            'note' => $note,
-            //'positions' => $positions,
-            //'invoice' => $invoice,
-            //'invoicePositions'=>$invoicePositions,
-                    
+            'form_position' => $form_position -> createView(),
+            'note_invoice' => $note_invoice,
+            'note_position' => $note_position,
+            'integer' => $integer,
+            'zero' => $zero,
+
         ]);     
        
                

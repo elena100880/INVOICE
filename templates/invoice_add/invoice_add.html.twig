@@ -8,34 +8,37 @@
     
     <h1>Choose positions and its quantity: </h1>
 
-    <h1>Add Supplier and Recipient: </h1>
-   
-    {{form(form)}}   
-    
-    {% if note == 1 %}
+    {{form(form_position)}}
+
+    {% if integer == false %}
         <div class='note' >
-            INVOICE HAS NOT ADDED!! <br> 
-            Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
+            TYPE INTEGER NUMBER !! <br> 
         </div>
-    {% elseif note == 2 %}
+    {% endif %}
+
+    {% if zero == 0 %}
         <div class='note' >
-            INVOICE HAS SUCCESSFULLY ADDED!! <br> 
+            TYPE MORE THAN 0 !! <br> 
         </div>
-    {% endif %} <br><br>
+    {% endif %}
 
-    <button type='button' id='clear'><a href="{{ path('invoice_add') }}"> CLEAR ALL !!!!  </a></button><br><br>
+    {% if note_position == 1 %}
+        <div class='note' >
+            CHOOSE THE POSITION !! <br> 
+        </div>
+    {% endif %}
 
-    <a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES  !!!!  >>>>></a><br><br>
-
-        {#    <table>
-                <tr>
-                    <th>ID<br>of Invoice</th><th>Supplier</th><th>Recipient</th><th>Sum</th><th>Positions</th><th>EDIT Positions</th>
-                </tr>
+    {% if note_position == 2 and  integer == true  and zero == 1  %}
+            
+        <table>
+            <tr>
+                <th>ID of Position</th><th>Name</th><th>Value</th>
+            </tr>
                 
-                {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? #}
-            {#    {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}             
-                        {# Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown #}
-            {#    {% else %}
+            {#    {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? 
+                {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}             
+                        Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown 
+               {% else %}
                     <tr>
                         <td> {{invoice.id}} </td>
                         <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
@@ -51,9 +54,9 @@
                                 {% if invoice == positionInvoice.getInvoice %}                                  
                                     {% set sum = sum + positionInvoice.getQuantity * positionInvoice.getPosition.getValue %}
                                 {% endif %}
-                            {% endfor %}     #}
+                            {% endfor %}     
                             
-            {#                {{sum}}
+                            {{sum}}
                         </td>
                         <td> 
                             {% for invoicePosition in invoice.getInvoicePosition %}  
@@ -63,9 +66,30 @@
                         <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>
                     </tr>
                 {% endif %} 
-                {% endfor %}   
-            </table>           #}
-       
+                {% endfor %}    #}
+        </table>
+
+    {% endif %} <br>
+
+    <h1>Add Supplier and Recipient: </h1>
+   
+    {{form(form)}}   
+    
+    {% if note_invoice == 1 %}
+        <div class='note' >
+            INVOICE HAS NOT ADDED!! <br> 
+            Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
+        </div>
+    {% elseif note_invoice == 2 %}
+        <div class='note' >
+            INVOICE HAS SUCCESSFULLY ADDED!! <br> 
+        </div>
+    {% endif %} <br><br>
+
+    <button type='button' id='clear'><a href="{{ path('invoice_add') }}"> CLEAR ALL!!  </a></button><br><br>
+
+    <a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES  !!!!  >>>>></a><br><br>
+  
         
 {% endblock %}
 
