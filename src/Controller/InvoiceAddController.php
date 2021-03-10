@@ -79,28 +79,33 @@ class InvoiceAddController extends AbstractController
             
         //validation of quantity field:
             if (!is_numeric($quantity) or  ($quantity - floor( $quantity) ) != 0) {
-                $integer = false;
+                $integer = false;  // notice flag "TYPE INTEGER NUMBER !! " if number is string or not integer
             }
 
             if ($quantity == '0') {
-                $zero = 0;
+                $zero = 0;  // notice flag "TYPE MORE THAN 0 !!" if quantity =0
             }
                
             if ($position == null) {
-                $note_position = 1;
+                $note_position = 1;  // notice flag "Add the position", if position field is empty
             }
-            else {
-                $note_position = 2;
+            else {            
+                foreach ($invoicePositionsArray as $invoicePositionInArray) {
+
+                    if ($position->getId() == $invoicePositionInArray->getPosition()->getId() ) {
+                        $note_position = 2;
+                    }
+                }
             }
             
-            if ($integer == true  and $zero == 1 and $note_position == 2) {
-                $note_position = 3;
-
+            if ($integer == true  and $zero == 1 and $note_position != 2) {
+                
                 array_push($invoicePositionsArray, $invoicePosition);
                 $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray  );
 
                 if ($session == 0) {
                     $request= Request::createFromGlobals();
+
                     $this->session->set('sessionInvoicePositionsArray', null);
                     $invoice_position = $request->query->get('invoice_position');
                     
@@ -110,7 +115,7 @@ class InvoiceAddController extends AbstractController
             }
            
         }
-                
+               
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice)
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
@@ -129,6 +134,7 @@ class InvoiceAddController extends AbstractController
                         ->add('send', SubmitType::class, ['label'=>'Create invoice']);
 
         $form->handleRequest($request);
+    
 
         if ($form->isSubmitted() ) {
             
@@ -138,30 +144,57 @@ class InvoiceAddController extends AbstractController
             
     //validation of position field:        
             if ($supplier == null or $recipient == null) {
-                $note_invoice = 1;
+                $note_invoice = 1;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
+
+                $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
+                    
+                    'form' => $form->createView(),
+                    'form_position' => $form_position -> createView(),
+                    'note_invoice' => $note_invoice,
+                    'note_position' => $note_position,
+                    'integer' => $integer,
+                    'zero' => $zero,
+                    'invoicePositionsArray' => $invoicePositionsArray,
+        
+                ]);     
+                
+                return new Response ($contents);  
             }
             else {
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($invoice);
-                $entityManager->flush();
-                $note_invoice = 2;
-            }       
+               
+                $invoiceManager = $this->getDoctrine()->getManager();
+                $invoiceManager->persist($invoice);
+                $invoiceManager->flush();
+
+                foreach ($invoicePositionsArray as $invoicePosition) {
+                    
+                    $invoicePosition->setInvoice($invoice);
+                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!!
+
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($invoicePosition);
+                    $entityManager->flush();
+                }
+                return $this->redirectToRoute( 'invoices');
+                
+            }      
+        }
+        else {
+            $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
+                        
+                'form' => $form->createView(),
+                'form_position' => $form_position -> createView(),
+                'note_invoice' => $note_invoice,
+                'note_position' => $note_position,
+                'integer' => $integer,
+                'zero' => $zero,
+                'invoicePositionsArray' => $invoicePositionsArray,
+
+            ]);     
+            return new Response ($contents);
         }
 
-        $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
-                    
-            'form' => $form->createView(),
-            'form_position' => $form_position -> createView(),
-            'note_invoice' => $note_invoice,
-            'note_position' => $note_position,
-            'integer' => $integer,
-            'zero' => $zero,
-            'invoicePositionsArray' => $invoicePositionsArray,
 
-        ]);     
-       
-               
-        return new Response ($contents);  
     } 
     
     public function position_add ($id_invoice, $id_position)

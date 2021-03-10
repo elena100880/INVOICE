@@ -12,13 +12,13 @@
     {{ form_rest(form_position) }}
     {{ form_end(form_position) }}
 
-    {% if integer == false %}
+    {% if integer == false and  note_position != 2 %}
         <div class='note' >
             TYPE INTEGER NUMBER !! <br> 
         </div>
     {% endif %}
 
-    {% if zero == 0 %}
+    {% if zero == 0 and  note_position != 2 %}
         <div class='note' >
             TYPE MORE THAN 0 !! <br> 
         </div>
@@ -27,6 +27,13 @@
     {% if note_position == 1 %}
         <div class='note' >
             CHOOSE THE POSITION !! <br> 
+        </div>
+    {% endif %}
+
+    {% if note_position == 2 %}
+        <div class='note' >
+            THE POSITION IS ALREADY IN THE TABLE!!  <br> 
+            IF YOU WANT TO CHANGE THE QUANTITY - MAKE IT IN THE TABLE!! <br> 
         </div>
     {% endif %}
 
@@ -66,10 +73,10 @@
             INVOICE HAS NOT ADDED!! <br> 
             Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
         </div>
-    {% elseif note_invoice == 2 %}
+{#    {% elseif note_invoice == 2 %}
         <div class='note' >
             INVOICE HAS SUCCESSFULLY ADDED!! <br> 
-        </div>
+        </div>  #}
     {% endif %} <br><br>
 
     <button type='button' id='clear'><a href="{{ path ('invoice_add', {session: 0} ) }}"> CLEAR ALL!!  </a></button><br><br>
