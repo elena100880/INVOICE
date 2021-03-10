@@ -8,7 +8,9 @@
     
     <h1>Choose positions and its quantity: </h1>
 
-    {{form(form_position)}}
+    {{ form_start(form_position) }}
+    {{ form_rest(form_position) }}
+    {{ form_end(form_position) }}
 
     {% if integer == false %}
         <div class='note' >
@@ -28,48 +30,32 @@
         </div>
     {% endif %}
 
-    {% if note_position == 2 and  integer == true  and zero == 1  %}
             
         <table>
-            <tr>
-                <th>ID of Position</th><th>Name</th><th>Value</th>
-            </tr>
-                
-            {#    {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? 
-                {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}             
-                        Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown 
-               {% else %}
-                    <tr>
-                        <td> {{invoice.id}} </td>
-                        <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
-                        <td> {{invoice.recipient.name}} {{invoice.recipient.family}}</td>
-                        <td> 
-                            {% set sum = 0 %}
-                            {% for invoicePosition in invoice.getInvoicePosition %}  
-                               {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
-                            {% endfor %} 
 
-                        {# version with iteration on all positionInvoices - not good at all:
-                            {% for positionInvoice in positionInvoices %}   TODO: risk 500 ???
-                                {% if invoice == positionInvoice.getInvoice %}                                  
-                                    {% set sum = sum + positionInvoice.getQuantity * positionInvoice.getPosition.getValue %}
-                                {% endif %}
-                            {% endfor %}     
-                            
-                            {{sum}}
-                        </td>
-                        <td> 
-                            {% for invoicePosition in invoice.getInvoicePosition %}  
-                               {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
-                            {% endfor %} 
-                        </td>
-                        <td><a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a></td>
-                    </tr>
-                {% endif %} 
-                {% endfor %}    #}
+            <tr>
+                <th>ID of Position</th><th>Name</th><th>Value</th><th>Quantity</th><th>Sum</th>
+            </tr>
+            
+        {% set sum = 0 %}
+
+        {% for invoicePosition in invoicePositionsArray %}   
+            <tr>
+                <td> {{invoicePosition.position.id}} </td>
+                <td> {{invoicePosition.position.name}} </td>
+                <td> {{invoicePosition.position.value}}</td>
+                <td> {{invoicePosition.quantity}}</td>
+                <td> 
+                    {{invoicePosition.position.value * invoicePosition.quantity}} 
+                    {% set sum = sum + invoicePosition.position.value * invoicePosition.quantity %}
+                </td>
+            </tr>
+        {% endfor %}
+
         </table>
 
-    {% endif %} <br>
+        <h4>Total sum: {{sum}}</h4> <br>
+
 
     <h1>Add Supplier and Recipient: </h1>
    
@@ -86,7 +72,7 @@
         </div>
     {% endif %} <br><br>
 
-    <button type='button' id='clear'><a href="{{ path('invoice_add') }}"> CLEAR ALL!!  </a></button><br><br>
+    <button type='button' id='clear'><a href="{{ path ('invoice_add', {session: 0} ) }}"> CLEAR ALL!!  </a></button><br><br>
 
     <a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES  !!!!  >>>>></a><br><br>
   

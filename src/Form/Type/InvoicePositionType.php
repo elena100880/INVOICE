@@ -37,12 +37,13 @@ class InvoicePositionType extends AbstractType
                                                         'choices' =>[],
                                                         'attr' => array('class' => 'js-select2-invoice-position')   
                                                         ])
-                -> add ('quantity', TextType::class, [
+                -> add ('quantity', NumberType::class, [
                                                         'label' => 'Add the quantity of chosen position:',
                                                         'data' => 1,
-                                                        'mapped' => false,
+                                                        'attr' => ['step' => 1]
+                                                        //'mapped' => false,
                                                     ])
-            //->add('invoice')
+                ->add('invoice', HiddenType::class)
         ;
         
         $builder->addEventListener(
@@ -88,9 +89,8 @@ class InvoicePositionType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => InvoicePosition::class, 
-            //'validation_groups' => false,    //TODO:  to disable validating NumberType. when typing strings... !!!! 
-            //Maybe another method for disabling only NumberType field
-            // just change to TextType and added 'mapped' => false to quantity field
+            'validation_groups' => false,    //  to disable validating NumberType. when typing strings... !!!!   TODO: maybe sth  more custom 
+            // another way  - just changed to TextType and added 'mapped' => false to quantity field
         ]);
     }
 }

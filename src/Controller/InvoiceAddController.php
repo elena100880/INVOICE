@@ -49,36 +49,40 @@ class InvoiceAddController extends AbstractController
         $this->session = $session;
     }
 
-    public function invoice_add(Request $request) : Response
+    public function invoice_add(Request $request, $session) : Response
     {     
         $note_position = 0;
         $note_invoice = 0;
         $integer = true;
         $zero = 1;
+                
+        if ( $this->session->get('sessionInvoicePositionsArray') != null and $session == 1)  {
+            $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
+        }
+        else {
+            $invoicePositionsArray = array();
+        }
 
         $invoicePosition = new InvoicePosition;
-        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition)
+        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition, ['method' => 'GET'])
                                
                                 -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
                                 -> add ('send', SubmitType::class, ['label' => 'Add chosen positions']);
                                 
+                                
         $form_position->handleRequest($request);
-        
-        
+                
         if ($form_position->isSubmitted() ) {
             
             $position = $form_position->get('position')->getData();
-            $quantityString = $form_position->get('quantity')->getData();
-            $tt = floatval($quantityString) ;
-            $yy = is_numeric($quantityString);
-            $ifInteger = floatval($quantityString) - floor( floatval($quantityString) );
-
-
-    //validation:
-            if (!is_numeric($quantityString) or  $ifInteger != 0) {
+            $quantity = $form_position->get('quantity')->getData();
+            
+        //validation of quantity field:
+            if (!is_numeric($quantity) or  ($quantity - floor( $quantity) ) != 0) {
                 $integer = false;
             }
-            if ($quantityString == '0') {
+
+            if ($quantity == '0') {
                 $zero = 0;
             }
                
@@ -88,12 +92,25 @@ class InvoiceAddController extends AbstractController
             else {
                 $note_position = 2;
             }
-
-
             
+            if ($integer == true  and $zero == 1 and $note_position == 2) {
+                $note_position = 3;
+
+                array_push($invoicePositionsArray, $invoicePosition);
+                $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray  );
+
+                if ($session == 0) {
+                    $request= Request::createFromGlobals();
+                    $this->session->set('sessionInvoicePositionsArray', null);
+                    $invoice_position = $request->query->get('invoice_position');
+                    
+                    return $this->redirectToRoute( 'invoice_add', ['session'=> 1,'invoice_position'=>$invoice_position]);
+                }
+
+            }
+           
         }
-        
-        
+                
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice)
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
@@ -119,7 +136,7 @@ class InvoiceAddController extends AbstractController
             $recipient = $form->get('recipient')->getData();
             
             
-    //validation:        
+    //validation of position field:        
             if ($supplier == null or $recipient == null) {
                 $note_invoice = 1;
             }
@@ -131,14 +148,6 @@ class InvoiceAddController extends AbstractController
             }       
         }
 
-    /*        //saving info about chosen/not chosen products (by saving GET form parameters) 
-            $request= Request::createFromGlobals();
-            $requestForm=$request->query->get('form');
-            $this->session->set('sessionForm', $requestForm  );
-              
-        }   */
-
-  
         $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
                     
             'form' => $form->createView(),
@@ -147,6 +156,7 @@ class InvoiceAddController extends AbstractController
             'note_position' => $note_position,
             'integer' => $integer,
             'zero' => $zero,
+            'invoicePositionsArray' => $invoicePositionsArray,
 
         ]);     
        

@@ -113,8 +113,6 @@ class InvoiceController extends AbstractController
                                     $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip');
                                                                 
                     }
-
-
                 $invoices  = $queryBuilder->getQuery()->getResult();    // !! this invoices have only associated InvoicePosition-objects in them;
                                                                         //  that is: filtered invoices have only InvoicePosition-objects with 
                                                                         //positions-id, which was chosen in Position filter

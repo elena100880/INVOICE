@@ -6,9 +6,11 @@ invoices:
             controller: App\Controller\InvoiceController::invoices
 
 invoice_add:
-            path: /invoice/add
+            path: /invoice/add/{session}
             controller: App\Controller\InvoiceAddController::invoice_add
-
+            defaults: 
+                      session: 1
+                      
 invoice_edit:
             path: /invoice/edit/{id_invoice}
             controller: App\Controller\InvoiceEditController::invoice_edit
