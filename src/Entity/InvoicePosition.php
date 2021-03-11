@@ -20,7 +20,7 @@ class InvoicePosition
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice")
      * @ORM\JoinColumn(nullable=false)
      */
     private $position;

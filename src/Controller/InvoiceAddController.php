@@ -98,7 +98,7 @@ class InvoiceAddController extends AbstractController
                 }
             }
             
-            if ($integer == true  and $zero == 1 and $note_position != 2) {
+            if ($integer == true  and $zero == 1 and $note_position == 0) {
                 
                 array_push($invoicePositionsArray, $invoicePosition);
                 $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray  );
@@ -166,15 +166,16 @@ class InvoiceAddController extends AbstractController
                 $invoiceManager->persist($invoice);
                 $invoiceManager->flush();
 
-                foreach ($invoicePositionsArray as $invoicePosition) {
+                //foreach ($invoicePositionsArray as $invoicePosition) {
                     
-                    $invoicePosition->setInvoice($invoice);
-                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!!
+                //    $invoicePosition->setInvoice($invoice);
+                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!! - - WRONG!!! persists new duplicate positions!!
 
-                    $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($invoicePosition);
-                    $entityManager->flush();
-                }
+                //    $entityManager = $this->getDoctrine()->getManager();
+                //    $entityManager->persist($invoicePosition);
+                //    $entityManager->flush();
+                //}
+                //$this->session->set('sessionInvoicePositionsArray', null);
                 return $this->redirectToRoute( 'invoices');
                 
             }      
