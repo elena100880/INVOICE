@@ -1,4 +1,4 @@
-### Test exercise.
+### Additional part of STUDY PROJECT - adding invoices
 
 You can launch the project (after uploading and executing composer install) with `docker-compose up` command.
 Then open **http://localhost/index.php/"route_path"**.
