@@ -99,11 +99,14 @@ class InvoiceAddController extends AbstractController
                 }
             }
             
+            //saving chosen InvoicePosition into array and saving this array into session:
             if ($integer == true  and $zero == 1 and $note_position == 0) {
                 
                 array_push($invoicePositionsArray, $invoicePosition);
-                $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray  );
-
+                $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
+                
+            //clearing form-fields after submit (just self-redirecting or refreshing):
+                return $this->redirect($request->getUri());  
             }
         }
                

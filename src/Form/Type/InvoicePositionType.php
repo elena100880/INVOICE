@@ -39,7 +39,7 @@ class InvoicePositionType extends AbstractType
                                                         ])
                 -> add ('quantity', NumberType::class, [
                                                         'label' => 'Add the quantity of chosen position:',
-                                                        'data' => 1,
+                                                        //'data' => 1,
                                                         'attr' => ['step' => 1]
                                                         //'mapped' => false,
                                                     ])
