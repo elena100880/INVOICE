@@ -49,14 +49,15 @@ class InvoiceAddController extends AbstractController
         $this->session = $session;
     }
 
-    public function invoice_add(Request $request, $session) : Response
+    public function invoice_add(Request $request) : Response
     {     
+        // flags note that all is OK:
         $note_position = 0;
         $note_invoice = 0;
         $integer = true;
         $zero = 1;
                 
-        if ( $this->session->get('sessionInvoicePositionsArray') != null and $session == 1)  {
+        if ( $this->session->get('sessionInvoicePositionsArray') != null)  {
             $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
         }
         else {
@@ -64,10 +65,10 @@ class InvoiceAddController extends AbstractController
         }
 
         $invoicePosition = new InvoicePosition;
-        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition, ['method' => 'GET'])
+        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition) //, ['method' => 'GET'])
                                
                                 -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
-                                -> add ('send', SubmitType::class, ['label' => 'Add chosen positions']);
+                                -> add ('send', SubmitType::class, ['label' => 'Add chosen position']);
                                 
                                 
         $form_position->handleRequest($request);
@@ -93,7 +94,7 @@ class InvoiceAddController extends AbstractController
                 foreach ($invoicePositionsArray as $invoicePositionInArray) {
 
                     if ($position->getId() == $invoicePositionInArray->getPosition()->getId() ) {
-                        $note_position = 2;
+                        $note_position = 2;     // notice flag "THE POSITION IS ALREADY IN THE TABLE!!"
                     }
                 }
             }
@@ -103,17 +104,7 @@ class InvoiceAddController extends AbstractController
                 array_push($invoicePositionsArray, $invoicePosition);
                 $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray  );
 
-                if ($session == 0) {
-                    $request= Request::createFromGlobals();
-
-                    $this->session->set('sessionInvoicePositionsArray', null);
-                    $invoice_position = $request->query->get('invoice_position');
-                    
-                    return $this->redirectToRoute( 'invoice_add', ['session'=> 1,'invoice_position'=>$invoice_position]);
-                }
-
             }
-           
         }
                
         $invoice = new Invoice();
@@ -175,7 +166,7 @@ class InvoiceAddController extends AbstractController
                 //    $entityManager->persist($invoicePosition);
                 //    $entityManager->flush();
                 //}
-                //$this->session->set('sessionInvoicePositionsArray', null);
+                $this->session->set('sessionInvoicePositionsArray', null);
                 return $this->redirectToRoute( 'invoices');
                 
             }      
@@ -194,9 +185,13 @@ class InvoiceAddController extends AbstractController
             ]);     
             return new Response ($contents);
         }
-
-
     } 
+    
+    public function invoice_clear_all_forms ()
+    {
+        $this->session->set('sessionInvoicePositionsArray', null);
+        return $this->redirectToRoute( 'invoice_add');
+    }
     
     public function position_add ($id_invoice, $id_position)
     {
