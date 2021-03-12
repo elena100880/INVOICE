@@ -13,6 +13,7 @@ invoice_clear_all_forms:
             path: /invoice/clear/all/forms
             controller: App\Controller\InvoiceAddController::invoice_clear_all_forms
 
+
 ajax_search_invoice_supplier:
             path: /ajax/search/invoice/supplier
             controller: App\Controller\AjaxSearchController::ajax_search_invoice_supplier

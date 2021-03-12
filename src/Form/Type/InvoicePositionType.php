@@ -57,7 +57,7 @@ class InvoicePositionType extends AbstractType
                 
                 if ($form->has('invoice_position_add')) {   
                     
-                    $form->add  ('position', EntityType::class,  [ 
+                    $form->add  ('position', EntityType::class,     [ 
                                                                         'label'=>'Choose Positions (type Name or Value):',
                                                                         'class' => Position::class,
                                                                         'query_builder' => function (PositionRepository $er) use ($data) 
@@ -79,10 +79,6 @@ class InvoicePositionType extends AbstractType
                 }
             }
         );
-
-
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -134,57 +134,54 @@ class InvoiceAddController extends AbstractController
             
             
     //validation of position field:        
-            if ($supplier == null or $recipient == null) {
-                $note_invoice = 1;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
-
-                $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
-                    
-                    'form' => $form->createView(),
-                    'form_position' => $form_position -> createView(),
-                    'note_invoice' => $note_invoice,
-                    'note_position' => $note_position,
-                    'integer' => $integer,
-                    'zero' => $zero,
-                    'invoicePositionsArray' => $invoicePositionsArray,
-        
-                ]);     
+            if ($supplier != null or $recipient != null) {
                 
-                return new Response ($contents);  
-            }
-            else {
-               
                 $invoiceManager = $this->getDoctrine()->getManager();
                 $invoiceManager->persist($invoice);
                 $invoiceManager->flush();
 
-                //foreach ($invoicePositionsArray as $invoicePosition) {
+                foreach ($invoicePositionsArray as $invoicePosition) {
                     
-                //    $invoicePosition->setInvoice($invoice);
-                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!! - - WRONG!!! persists new duplicate positions!!
+                    $invoicePosition->setInvoice($invoice);
 
-                //    $entityManager = $this->getDoctrine()->getManager();
-                //    $entityManager->persist($invoicePosition);
-                //    $entityManager->flush();
-                //}
-                $this->session->set('sessionInvoicePositionsArray', null);
-                return $this->redirectToRoute( 'invoices');
+                //???? persist for InvoicePositions doesn't work without this 3 lines!!
+                // that is:  I have to add the position to the InvoicePosition in such way as below,
+                //whereas my InvoicePosition object in each iteration ALREADY HAS associated position:    
+                    $positionId=$invoicePosition->getPosition()->getId();
+                    $repository=$this->getDoctrine()->getRepository(Position::class);
+                    $position=$repository->find($positionId);
+
+                    $invoicePosition->setPosition($position);
+                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!! - - WRONG!!! persists new duplicate positions after creating new Invoice!!
+
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($invoicePosition);
+                    $entityManager->flush();
+                }
                 
-            }      
+                $this->session->set('sessionInvoicePositionsArray', null);
+                return $this->redirectToRoute( 'invoices');       
+                            
+            }
+            else {
+                $note_invoice = 1;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
+            }
         }
-        else {
-            $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
-                        
-                'form' => $form->createView(),
-                'form_position' => $form_position -> createView(),
-                'note_invoice' => $note_invoice,
-                'note_position' => $note_position,
-                'integer' => $integer,
-                'zero' => $zero,
-                'invoicePositionsArray' => $invoicePositionsArray,
 
-            ]);     
-            return new Response ($contents);
-        }
+        $contents = $this->renderView('invoice_add/invoice_add.html.twig', [
+                        
+            'form' => $form->createView(),
+            'form_position' => $form_position -> createView(),
+            'note_invoice' => $note_invoice,
+            'note_position' => $note_position,
+            'integer' => $integer,
+            'zero' => $zero,
+            'invoicePositionsArray' => $invoicePositionsArray,
+
+        ]); 
+
+        return new Response ($contents);
+        
     } 
     
     public function invoice_clear_all_forms ()
@@ -192,6 +189,8 @@ class InvoiceAddController extends AbstractController
         $this->session->set('sessionInvoicePositionsArray', null);
         return $this->redirectToRoute( 'invoice_add');
     }
+    
+    
     
     public function position_add ($id_invoice, $id_position)
     {
