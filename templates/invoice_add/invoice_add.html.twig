@@ -73,10 +73,7 @@
             INVOICE HAS NOT ADDED!! <br> 
             Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
         </div>
-{#    {% elseif note_invoice == 2 %}
-        <div class='note' >
-            INVOICE HAS SUCCESSFULLY ADDED!! <br> 
-        </div>  #}
+
     {% endif %} <br><br>
 
     <button type='button' id='clear'><a href="{{ path ('invoice_clear_all_forms') }}"> CLEAR ALL!!  </a></button><br><br>
@@ -86,4 +83,15 @@
         
 {% endblock %}
 
+
+{#  preventing resubmit after refreshing pafe!!!
+    find the below script here: https://dtbaker.net/files/prevent-post-resubmit.php;
+    another ways to do so for future studiing!!: https://stackoverflow.com/questions/6320113/how-to-prevent-form-resubmission-when-page-is-refreshed-f5-ctrlr/45656609#45656609 #}
+{% block javascripts1 %}
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+{% endblock %}
 
