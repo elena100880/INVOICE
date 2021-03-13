@@ -2,7 +2,7 @@
 
 
 **Launch**
-After uploading the project and executing command `composer install` inside the project folder You can launch the project with `docker-compose up` command. 
+After uploading the project and executing command `composer install` inside the project folder You can launch the project with `docker-compose up` command in **Linux bash**. 
 Then open **http://localhost/index.php/"route_path**.
 
 ***
