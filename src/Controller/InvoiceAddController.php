@@ -194,9 +194,7 @@ class InvoiceAddController extends AbstractController
         $this->session->set('sessionInvoicePositionsArray', null);
         return $this->redirectToRoute( 'invoice_add');
     }
-    
-    
-    
+        
     public function position_add ($id_invoice, $id_position)
     {
                       
@@ -271,7 +269,10 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
                                                         'form'=>$requestForm]);
             
-        }
+    }
 
+    public function position_delete_whole ($id_invoice, $id_position)
+    {
+    }
         
 }

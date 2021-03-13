@@ -5,6 +5,7 @@ invoices:
             path: /invoices
             controller: App\Controller\InvoiceController::invoices
 
+
 invoice_add:
             path: /invoice/add
             controller: App\Controller\InvoiceAddController::invoice_add
@@ -12,6 +13,18 @@ invoice_add:
 invoice_clear_all_forms:
             path: /invoice/clear/all/forms
             controller: App\Controller\InvoiceAddController::invoice_clear_all_forms
+
+position_add:
+            path: /position/add/{id_invoice}/{id_position}
+            controller: App\Controller\InvoiceEditController::position_add
+
+position_delete:
+            path: /position/delete/{id_invoice}/{id_position}
+            controller: App\Controller\InvoiceEditController::position_delete
+
+position_delete_whole:
+            path: /position/delete/whole/{id_invoice}/{id_position}
+            controller: App\Controller\InvoiceEditController::position_delete_whole
 
 
 ajax_search_invoice_supplier:
@@ -28,15 +41,7 @@ ajax_search_invoice_position:
 
 
 
-
 invoice_edit:
             path: /invoice/edit/{id_invoice}
             controller: App\Controller\InvoiceEditController::invoice_edit
 
-position_add:
-            path: /position/add/{id_invoice}/{id_position}
-            controller: App\Controller\InvoiceEditController::position_add
-
-position_delete:
-            path: /position/delete/{id_invoice}/{id_position}
-            controller: App\Controller\InvoiceEditController::position_delete

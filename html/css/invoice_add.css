@@ -61,5 +61,11 @@ span[dir='ltr'] {
 a {
 	text-decoration: none;
 }
+#plus_minus {
+	color:red;
+	font-weight: bold;
+	font-size: 200%;
+}
+
 
 
