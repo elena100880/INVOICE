@@ -22,6 +22,7 @@ Execute the following commands:
 
 ***
 **DataBase**
+
 As there is a plain functional without pages for  Adding/Editing such entities as Position/Supplier/Recipient - **/var/data.db** file with filled example-tables of positions/suppliers/recipients are added to the repository.
 
 ***
