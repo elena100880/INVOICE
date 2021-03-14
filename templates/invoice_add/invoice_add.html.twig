@@ -102,12 +102,12 @@
 
 {#  preventing resubmit after refreshing page!!!
     find the below script here: https://dtbaker.net/files/prevent-post-resubmit.php;
-    another ways to do so for future studiing!!: https://stackoverflow.com/questions/6320113/how-to-prevent-form-resubmission-when-page-is-refreshed-f5-ctrlr/45656609#45656609 #}
+    another ways to do so for future studiing!!: https://stackoverflow.com/questions/6320113/how-to-prevent-form-resubmission-when-page-is-refreshed-f5-ctrlr/45656609#45656609     #}
 {% block javascripts1 %}
-    <script>
-        if ( window.history.replaceState ) {
+    {<script>
+        if ( window.history.replaceState ) {     
             window.history.replaceState( null, null, window.location.href );
         }
-    </script>
-{% endblock %}
+    </script>   
+{% endblock %}  
 

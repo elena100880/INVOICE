@@ -31,7 +31,7 @@ As there is a plain functional without pages for  Adding/Editing such entities a
 **Pages:**
 
    + **http://localhost/index.php/invoices** - invoices: list and filter by Supplier, Recipient, Position.
-   + **http://localhost/index.php/invoice/add** (not finished yet!!) - adding a new invoice, link is also available from page `http://localhost/index.php/invoices`.   
+   + **http://localhost/index.php/invoice/add**  - adding a new invoice, link is also available from page `http://localhost/index.php/invoices`.   
 
   
 
