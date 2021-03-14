@@ -14,17 +14,17 @@ invoice_clear_all_forms:
             path: /invoice/clear/all/forms
             controller: App\Controller\InvoiceAddController::invoice_clear_all_forms
 
-position_add:
+invoice_add_position_add:
             path: /position/add/{quantity}/{id_position}
-            controller: App\Controller\InvoiceAddController::position_add
+            controller: App\Controller\InvoiceAddController::invoice_add_position_add
 
-position_delete:
+invoice_add_position_delete:
             path: /position/delete/{quantity}/{id_position}
-            controller: App\Controller\InvoiceAddController::position_delete
+            controller: App\Controller\InvoiceAddController::invoice_add_position_delete
 
-position_delete_whole:
-            path: /position/delete/whole/{id_position}
-            controller: App\Controller\InvoiceAddController::position_delete_whole
+invoice_add_position_delete_whole:
+            path: /position/deletewhole/{id_position}
+            controller: App\Controller\InvoiceAddController::invoice_add_position_delete_whole
 
 
 ajax_search_invoice_supplier:

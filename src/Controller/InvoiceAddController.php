@@ -191,7 +191,7 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add');
     }
         
-    public function position_add ($quantity, $id_position)
+    public function invoice_add_position_add ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
             
@@ -209,7 +209,7 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add' );  
     }
 
-    public function position_delete ($quantity, $id_position)
+    public function invoice_add_position_delete ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
        
@@ -233,7 +233,7 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add' );  
     }
 
-    public function position_delete_whole ($id_position)
+    public function invoice_add_position_delete_whole ($id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
        
