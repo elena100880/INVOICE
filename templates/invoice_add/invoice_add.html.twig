@@ -54,13 +54,13 @@
                 <td> {{invoicePosition.position.value}}</td>
 
                 <td>
-                    <a class="button" href="{{ path('position_delete',  {id_invoice: 1, id_position: invoicePosition.getPosition.getId}) }}"><span id="plus_minus"> &#8722   </span> </a>  
+                    <a class="button" href="{{ path('position_delete',  {quantity: invoicePosition.quantity, id_position: invoicePosition.getPosition.getId}) }}"><span id="plus_minus"> &#8722   </span> </a>  
                 </td> 
                 
                 <td> {{invoicePosition.quantity}}</td>
 
                 <td> 
-                    <a class="button" href="{{ path('position_add', {id_invoice: 1, id_position: invoicePosition.getPosition.getId}) }}"> <span id="plus_minus"> +  </span> </a>  
+                    <a class="button" href="{{ path('position_add', {quantity: invoicePosition.quantity, id_position: invoicePosition.getPosition.getId}) }}"> <span id="plus_minus"> +  </span> </a>  
                 </td> 
 
                 <td> 
@@ -69,7 +69,7 @@
                 </td>
 
                 <td> 
-                    <a class="button" href="{{ path('position_delete_whole',  {id_invoice: 1, id_position: invoicePosition.getPosition.getId}) }}"> <span id="plus_minus"> &#x2718 </span> </a>  
+                    <a class="button" href="{{ path('position_delete_whole',  {id_position: invoicePosition.getPosition.getId}) }}"> <span id="plus_minus"> &#x2718 </span> </a>  
                 </td> 
 
             </tr>

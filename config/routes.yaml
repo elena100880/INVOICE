@@ -15,16 +15,16 @@ invoice_clear_all_forms:
             controller: App\Controller\InvoiceAddController::invoice_clear_all_forms
 
 position_add:
-            path: /position/add/{id_invoice}/{id_position}
-            controller: App\Controller\InvoiceEditController::position_add
+            path: /position/add/{quantity}/{id_position}
+            controller: App\Controller\InvoiceAddController::position_add
 
 position_delete:
-            path: /position/delete/{id_invoice}/{id_position}
-            controller: App\Controller\InvoiceEditController::position_delete
+            path: /position/delete/{quantity}/{id_position}
+            controller: App\Controller\InvoiceAddController::position_delete
 
 position_delete_whole:
-            path: /position/delete/whole/{id_invoice}/{id_position}
-            controller: App\Controller\InvoiceEditController::position_delete_whole
+            path: /position/delete/whole/{id_position}
+            controller: App\Controller\InvoiceAddController::position_delete_whole
 
 
 ajax_search_invoice_supplier:

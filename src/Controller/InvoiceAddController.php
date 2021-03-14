@@ -6,12 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Form;
@@ -195,84 +191,65 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add');
     }
         
-    public function position_add ($id_invoice, $id_position)
+    public function position_add ($quantity, $id_position)
     {
-                      
-    // extracting array of InvoicePosition objects for the chosen invoice and position        
-        $invoicePositionManager = $this->getDoctrine()->getManager();
-        $invoicePositionArray = $invoicePositionManager->getRepository(InvoicePosition::class)
-                                                        ->findBy ([
-                                                            'invoice' => $id_invoice, 
-                                                            'position' => $id_position 
-                                                        ]);
-        
+        $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
+            
+            foreach ($invoicePositionsArray as $invoicePosition) {
 
-    //checking if this position is already exist in the invoice and adding new position if not exist
-        if (empty($invoicePositionArray) ) { 
+                if ($invoicePosition->getPosition()->getId() ==  $id_position) {
+
+                    $invoicePosition->setQuantity($quantity + 1);
+                    //break;
+                }
                 
-            $positionManager = $this->getDoctrine()->getManager();
-            $position = $positionManager->getRepository(Position::class)->find($id_position);
-
-            $invoiceManager = $this->getDoctrine()->getManager();
-            $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
-            
-            $invoicePosition = new InvoicePosition();
-            $invoicePosition->setInvoice($invoice);
-            $invoicePosition->setPosition($position);
-            $invoicePosition->setQuantity(1);
-                        
-        }
-        else {
-    // changing the quantity for +1 
-            $invoicePosition =  $invoicePositionArray[0];
-            $quantity=$invoicePosition->getQuantity();
-            $invoicePosition->setQuantity($quantity + 1);
-        }
-
-        $invoicePositionManager ->persist($invoicePosition);
-        $invoicePositionManager ->flush();
+            }
+            $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
         
-    //reconstraction of chosen/not chosen positions (by getting saved GET form parameters) 
-        $requestForm=$this->session->get('sessionForm'); 
-        
-        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
-                                                        'form'=>$requestForm]);
+        return $this->redirectToRoute( 'invoice_add' );  
     }
 
-    public function position_delete ($id_invoice, $id_position)
+    public function position_delete ($quantity, $id_position)
     {
-    // extracting array of InvoicePosition objects for the chosen invoice and position     
-        $invoicePositionManager = $this->getDoctrine()->getManager();
-        $invoicePositionArray = $this->getDoctrine()->getRepository(InvoicePosition::class)
-                                                ->findBy ([
-                                                    'invoice' => $id_invoice, 
-                                                    'position' => $id_position 
-                                                ]);
-        $invoicePosition =  $invoicePositionArray[0];
+        $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
+       
+            $i=0;      
+            foreach ($invoicePositionsArray as $invoicePosition) {
 
-    // delete the position 
-        if ($invoicePosition->getQuantity()==1) {
-            $invoicePositionManager->remove($invoicePosition);
-            $invoicePositionManager->flush();
+                if ($invoicePosition->getPosition()->getId() ==  $id_position) {
 
-        }
-        else {
-            $quantity=$invoicePosition->getQuantity();
-            $invoicePosition->setQuantity($quantity - 1);
-            $invoicePositionManager ->persist($invoicePosition);
-            $invoicePositionManager ->flush();
-        }
-    
-    //reconstraction of chosen/not chosen positions (by getting saved GET 'form' parameters) 
-        $requestForm=$this->session->get('sessionForm'); 
+                    if ($quantity == 1) {
+                        array_splice($invoicePositionsArray, $i, 1);
+                    }
+                    else {
+                        $invoicePosition->setQuantity($quantity - 1);
+                    }
+                    //break;
+                }
+                $i=$i+1;
+            }
+            $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
         
-        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
-                                                        'form'=>$requestForm]);
-            
+        return $this->redirectToRoute( 'invoice_add' );  
     }
 
-    public function position_delete_whole ($id_invoice, $id_position)
+    public function position_delete_whole ($id_position)
     {
+        $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
+       
+            $i=0;      
+            foreach ($invoicePositionsArray as $invoicePosition) {
+
+                if ($invoicePosition->getPosition()->getId() ==  $id_position) {
+
+                    array_splice($invoicePositionsArray, $i, 1);
+                    //break;
+                }
+                $i=$i+1;
+            }
+            $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
+        
+        return $this->redirectToRoute( 'invoice_add' ); 
     }
         
 }
