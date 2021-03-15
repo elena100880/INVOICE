@@ -28,8 +28,12 @@ invoice_add_position_delete_whole:
 
 
 invoice_edit_clear_all:
-            path: /invoice/edit/clear/all/forms/{id_invoice}
+            path: /invoice/edit/clear/all/{id_invoice}
             controller: App\Controller\InvoiceEditController::invoice_edit_clear_all
+
+invoice_edit_save_positions:
+            path: /invoice/edit/save/positions/{id_invoice}
+            controller: App\Controller\InvoiceEditController::invoice_edit_save_positions
 
 invoice_edit_position_add:
             path: /position/add/edit/{quantity}/{id_position}/{id_invoice}

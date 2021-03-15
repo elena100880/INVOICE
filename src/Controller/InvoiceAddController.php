@@ -147,7 +147,7 @@ class InvoiceAddController extends AbstractController
                 // that is:  I have to add the position to the InvoicePosition in such way as below,
                 //whereas my InvoicePosition object in each iteration ALREADY HAS associated position:  
                 
-                //FOUND!!! - the Position in made-from-form $InvoicePosition from array $invoicePositionsArray - has NO assotiated positionInvoices objects (allthough in DB this Position HAS  assotiated positionInvoices objects). So I have to get Position from DB again and add it to my $InvoicePosition Position-property:
+                //??? - the Position in made-from-form $InvoicePosition from array $invoicePositionsArray - has NOT ALL assotiated positionInvoices objects (allthough in DB this Position HAS  assotiated positionInvoices objects). So I have to get Position from DB again and add it to my $InvoicePosition Position-property:
                     $positionId=$invoicePosition->getPosition()->getId();
                     $repository=$this->getDoctrine()->getRepository(Position::class);
                     $position=$repository->find($positionId);

@@ -52,11 +52,12 @@ class InvoiceEditController extends AbstractController
         //flags:
         $note_positions_not_saved = 0;
 
-
         $invoiceManager = $this->getDoctrine()->getManager();
         $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
+
         $invoicePositionsCollection = $invoice->getInvoicePosition();  //collection of Invoice_position objects associated to this invoice
         $invoicePositionsArrayDB = $invoicePositionsCollection->toArray();  // change the Collection into Array
+        //$this->session->set('sessionInvoicePositionsArrayDB'.$id_invoice, $invoicePositionsArrayDB);
 
         // if invoice was deleted - no way to get to rhis page:
         if ( $invoice==null ) {
@@ -81,10 +82,28 @@ class InvoiceEditController extends AbstractController
         else {
             $invoicePositionsArray = $invoicePositionsArrayDB;
             $this->session->set('sessionInvoicePositionsArray'.$id_invoice, $invoicePositionsArrayDB);
+            //$invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
         }
 
         //if Array  from DB is not equal to the Array from session - stage NOTE:
-        if ($invoicePositionsArrayDB != $invoicePositionsArray) {
+        if ( count($invoicePositionsArrayDB) == count($invoicePositionsArray) ) {
+            
+            for ($i = 0; $i<count($invoicePositionsArrayDB); $i=$i+1) {
+
+                        if (
+                                $invoicePositionsArrayDB[$i]->getPosition()->getId() !=  $invoicePositionsArray[$i]->getPosition()->getId() 
+                                or
+                                $invoicePositionsArrayDB[$i]->getInvoice()->getId() !=  $invoicePositionsArray[$i]->getInvoice()->getId() 
+                                or
+                                $invoicePositionsArrayDB[$i]->getQuantity() != $invoicePositionsArray[$i]->getQuantity() 
+                            ) {
+                        
+                            $note_positions_not_saved = 1;
+                            break;
+                        }
+            }
+        }
+        else {
             $note_positions_not_saved = 1;
         }
                        
@@ -104,6 +123,22 @@ class InvoiceEditController extends AbstractController
     public function invoice_edit_clear_all($id_invoice)
     {
         $this->session->set('sessionInvoicePositionsArray'.$id_invoice, null);
+        return $this->redirectToRoute( 'invoice_edit', ['id_invoice' => $id_invoice]);
+    }
+
+    public function invoice_edit_save_positions($id_invoice)
+    {
+        $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
+
+        $invoiceManager = $this->getDoctrine()->getManager();
+        $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
+
+        foreach ($invoicePositionsArray as $invoicePosition) {
+            $invoice->addInvoicePosition($invoicePosition);
+        }
+
+        $this->session->set('sessionInvoicePositionsArray'.$id_invoice, null);
+
         return $this->redirectToRoute( 'invoice_edit', ['id_invoice' => $id_invoice]);
     }
     
