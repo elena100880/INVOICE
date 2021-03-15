@@ -35,10 +35,31 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 class InvoiceController extends AbstractController
 {
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
     public function invoices(Request $request) : Response
     {  
+
+    /*//for destring session variable 'sessionInvoicePositionsArray.$id_invoice'  if quiting from Invoice_edit page:
+        $request = Request::createFromGlobals();
+        $previous = $this->$session->get('previous');
+        $id_invoice = basename($previous).PHP_EOL;
+        if ($previous != null)  {
+            
+            if ($request->getPathInfo() != $this->$session->get('previous') ) {
+
+                $this->$session->set('sessionInvoicePositionsArray'.$id_invoice, null);
+            }
+        }
+        $this->session->set('previous', $request->getPathInfo() );     */
+    
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
 

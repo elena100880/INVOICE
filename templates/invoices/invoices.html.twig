@@ -34,13 +34,6 @@
                                {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
                             {% endfor %} 
 
-                        {# version with iteration on all positionInvoices - not good at all:
-                            {% for positionInvoice in positionInvoices %}   TODO: risk 500 ???
-                                {% if invoice == positionInvoice.getInvoice %}                                  
-                                    {% set sum = sum + positionInvoice.getQuantity * positionInvoice.getPosition.getValue %}
-                                {% endif %}
-                            {% endfor %}     #}
-                            
                             {{sum}}
                         </td>
                         <td> 
@@ -48,7 +41,7 @@
                                {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
                             {% endfor %} 
                         </td>
-                        <td>{# <a href="{{ path('invoice_edit', {id_invoice: invoice.id}) }}">edit the invoice  >></a> #} </td>
+                        <td> <a href="{{ path('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}">edit the invoice  >></a>  </td>
                     </tr>
                 {% endif %} 
                 {% endfor %}   

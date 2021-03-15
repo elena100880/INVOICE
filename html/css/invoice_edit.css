@@ -1,16 +1,13 @@
 .content {
-    width: 1100px;
+    width: 900px;
     min-height: 100px;
-	padding-left: 0px;
-	padding-right: 10px;
-	padding-top: 6px;
-	padding-bottom: 20px;
-	
+	padding: 20px;
+	padding-left: 50px;
 }
 #form > div{
 	margin-top: 0px;
 }
-button {
+button[type='submit'], button[type='reset'], button#clear {
 	color: black;
 	margin: 20px 10px 20px 10px;
 	padding: 10px;
@@ -19,6 +16,7 @@ button {
 	font-weight: bold;
 	background-color: mediumSeaGreen;
 	border: 2px solid black;
+	
 }
 label {
 	color: green;
@@ -28,11 +26,18 @@ label {
 	width: 300px;
 	box-sizing: content-box;
 }
-input, select, option {
+
+input, select, option, textarea {
 	color: black;
 	width: 250px;
 	padding: 2px;
 	box-sizing: content-box;
+}
+input[type='radio']{
+	width: 10px;
+}
+label.required {
+	width: 300px;
 }
 table {
 	margin-bottom: 10px;
@@ -43,25 +48,24 @@ td, th {
 	border-collapse: collapse;
 	padding: 5px;
 }
-#invoice {
-	float:left;
-	padding: 25px;
+span {
+	color: black;
 }
-#form {
-	float:left;
-	padding: 25px;
+span[dir='ltr'] {
+	width: 250px;
+}
+.note {
+	color:red;
+	font-weight: bold;
+}
+a {
+	text-decoration: none;
 }
 #plus_minus {
 	color:red;
 	font-weight: bold;
 	font-size: 200%;
 }
-span {
-	color: black;
-}
-a {
-	text-decoration: none;
-	
-}
+
 
 
