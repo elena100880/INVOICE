@@ -175,10 +175,60 @@ class InvoiceEditController extends AbstractController
             $note_positions_not_saved = 1;
         }
         outer:
-                       
+        
+        $supplier = $invoice->getSupplier();
+        $recipient = $invoice->getRecipient();
+        $invoice1 = new Invoice();
+        $form = $this->createForm (InvoiceType::class, $invoice1)
+                        ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
+                                                                    'class' => Supplier::class,
+                                                                    'query_builder' => function (SupplierRepository $er) use ($supplier) 
+                                                                                    {
+                                                                                        return $er  ->createQueryBuilder('s')
+                                                                                                    -> where ('s.id = :supplierId')
+                                                                                                    -> setParameter('supplierId', $supplier->getId());
+                                                                                    }, 
+                                                                        
+                                                                    'choice_label' => function ($supplier) 
+                                                                                    {
+                                                                                        return $supplier->getName().' NIP: '.$supplier->getNip();
+                                                                                    },
+                                                                    'attr' => array('class' => 'js-select2-invoice-supplier')   
+                                                                ])
+
+                        ->add('recipient', EntityType::class, [     'label'=>'Recipient (type Name, Family or Address):',
+                                                                    'class' => Recipient::class,
+                                                                    'query_builder' => function (RecipientRepository $er) use ($recipient) 
+                                                                                    {
+                                                                                        return $er  ->createQueryBuilder('r')
+                                                                                                    -> where ('r.id = :recipientId')
+                                                                                                    -> setParameter('recipientId', $recipient->getId());
+                                                                                    }, 
+                                                                        
+                                                                    'choice_label' => function ($recipient) 
+                                                                                    {
+                                                                                        return $recipient->getName().', '.$recipient->getFamily().', '.$recipient->getAddress();
+                                                                                    },
+                                                                    'attr' => array('class' => 'js-select2-invoice-recipient')   
+                                                            ])
+                        ->add('invoicePosition', HiddenType::class, ['mapped' => false])
+
+                        ->add('invoice_add', HiddenType::class, ['mapped' => false])
+                        ->add('send', SubmitType::class, ['label'=>'SAVE ALL CHANGES IN THE INVOICE']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() ) {
+            
+            $supplier = $form->get('supplier')->getData();
+            $recipient = $form->get('recipient')->getData();
+
+        }
+
         $contents = $this->renderView('invoice_edit/invoice_edit.html.twig', [
                     
             'form_position' => $form_position->createView(),
+            'form' => $form->createView(),
             'note_invoice' => $note_invoice,
             'note_position' => $note_position,
             'integer' => $integer,

@@ -82,11 +82,16 @@
         </div>
     {% endif %}
 
-    <button type='button' id='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP CHANGES  </a></button>
+    <button type='button' id='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP CHANGES IN THE TABLE </a></button>
 
-    <button type='button' id='clear'><a href="{{ path ('invoice_edit_save_positions', {id_invoice: invoice.id} ) }}"> SAVE CHANGES  </a></button>
+    <button type='button' id='clear'><a href="{{ path ('invoice_edit_save_positions', {id_invoice: invoice.id} ) }}"> SAVE CHANGES FROM THE TABLE TO DB  </a></button>
 
     <h1>Edit Supplier and Recipient in the Invoice with ID {{invoice.id}}: </h1>
+
+    {{form(form)}}  
+
+
+
    
     <br><br><a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES !!!!  >>>> <br></a>
 
