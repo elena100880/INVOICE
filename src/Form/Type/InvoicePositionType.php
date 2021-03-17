@@ -43,7 +43,7 @@ class InvoicePositionType extends AbstractType
                                                         'attr' => ['step' => 1]
                                                         //'mapped' => false,
                                                     ])
-                ->add('invoice', HiddenType::class)
+                //->add('invoice', HiddenType::class)
         ;
         
         $builder->addEventListener(

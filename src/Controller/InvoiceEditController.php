@@ -50,6 +50,10 @@ class InvoiceEditController extends AbstractController
     public function invoice_edit(Request $request, $id_invoice) : Response
     {    
         //flags:
+        $note_position = 0;
+        $note_invoice = 0;
+        $integer = true;
+        $zero = 1;
         $note_positions_not_saved = 0;
 
         $invoiceManager = $this->getDoctrine()->getManager();
@@ -57,23 +61,13 @@ class InvoiceEditController extends AbstractController
 
         $invoicePositionsCollection = $invoice->getInvoicePosition();  //collection of Invoice_position objects associated to this invoice
         $invoicePositionsArrayDB = $invoicePositionsCollection->toArray();  // change the Collection into Array
-        //$this->session->set('sessionInvoicePositionsArrayDB'.$id_invoice, $invoicePositionsArrayDB);
-
-        // if invoice was deleted - no way to get to rhis page:
+        
+        // if invoice was deleted or such id_invoice is not exist - no way to get to this page:
         if ( $invoice==null ) {
             return $this->redirectToRoute('invoices');
         }
      
-        // form for adding positions:
-        $invoicePosition = new InvoicePosition;
-        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition) //, ['method' => 'GET'])
-                               
-                                -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
-                                -> add ('send', SubmitType::class, ['label' => 'Add chosen position']);
-
-        $form_position->handleRequest($request);
-
-       // getting Array of InvoicePositions objects for the Invoice from session if it exists:
+        // getting Array of InvoicePositions objects for the Invoice from session if session variable is exists:
         if ( $this->session->get('sessionInvoicePositionsArray'.$id_invoice) != null)  {
             $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
            
@@ -85,31 +79,110 @@ class InvoiceEditController extends AbstractController
             //$invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
         }
 
-        //if Array  from DB is not equal to the Array from session - stage NOTE:
-        if ( count($invoicePositionsArrayDB) == count($invoicePositionsArray) ) {
+        // form for adding positions:
+        $invoicePosition = new InvoicePosition;
+        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition)
+                                    -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
+                                    -> add ('send', SubmitType::class, ['label' => 'Add chosen position']);
+        $form_position->handleRequest($request);
+        
+        if ($form_position->isSubmitted() ) {
             
-            for ($i = 0; $i<count($invoicePositionsArrayDB); $i=$i+1) {
+            $position = $form_position->get('position')->getData();
+            $quantity = $form_position->get('quantity')->getData();
+            
+        //validation of quantity field:
+            if (!is_numeric($quantity) or  ($quantity - floor( $quantity) ) != 0) {
+                $integer = false;  // notice flag "TYPE INTEGER NUMBER !! " if number is string or not integer
+            }
 
-                        if (
-                                $invoicePositionsArrayDB[$i]->getPosition()->getId() !=  $invoicePositionsArray[$i]->getPosition()->getId() 
-                                or
-                                $invoicePositionsArrayDB[$i]->getInvoice()->getId() !=  $invoicePositionsArray[$i]->getInvoice()->getId() 
-                                or
-                                $invoicePositionsArrayDB[$i]->getQuantity() != $invoicePositionsArray[$i]->getQuantity() 
-                            ) {
-                        
-                            $note_positions_not_saved = 1;
-                            break;
-                        }
+            if ($quantity == '0') {
+                $zero = 0;  // notice flag "TYPE MORE THAN 0 !!" if quantity =0
+            }
+               
+            if ($position == null) {
+                $note_position = 1;  // notice flag "Add the position", if position field is empty
+            }
+            else {            
+                foreach ($invoicePositionsArray as $invoicePosition) {
+
+                    if ($position->getId() == $invoicePosition->getPosition()->getId() ) {
+                        $note_position = 2;     // notice flag "THE POSITION IS ALREADY IN THE TABLE!!"
+                    }
+                }
+            }
+            
+            //if all above validation is OK, then saving chosen InvoicePosition into $invoicePositionsArray and saving this array into session:
+            if ($integer == true  and $zero == 1 and $note_position == 0) {
+                
+                array_push($invoicePositionsArray, $invoicePosition);
+                $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
+                
+            //clearing form-fields after submit (just self-redirecting  like refreshing page):
+                return $this->redirect($request->getUri());  
             }
         }
+
+        /**
+         * if Array  from DB is not equal to the Array from session - stage NOTE:
+         * 
+         * @todo
+         * After first visit to this page, Array of InvoicePositions from DB for this invoice( $invoicePositionsArrayDB) is wrote down to the session!
+         * After refreshing the page, that array is getting from the session and writing down to the $invoicePositionsArray variable.
+         * BUT!!
+         * !!!???!! I could not just compare arrays: $invoicePositionsArrayDB and $invoicePositionsArray from session 
+         * because if even they consist of the same array of InvoicePosition objects - 
+         * that is: corresponding InvoicePosition objects in both arrays have equal quantity and equal id_position and id_invoice - 
+         * but !! - positions/invoice objects IN corresponding InvoicePositions from both arrays-  are not equal! - 
+         * they have different content of property PositionInvoice/invoicePosition in them, although have the same id;
+         * and i haven't found the the cause of it; becuase it is - the same array!!. First - from DB, second - from session, but to the session was saved the aaray from DB!!!
+         * So the property PositionInvoice/invoicePosition has changed after writing down to the session and after getting from the session!!!??
+         * 
+         * maybe it is the same problem as when I have the problem with persisting InvoicePositions in INVOICE_ADD page.
+         * So, below - the comparison of two arrays by id_position and quantity:
+         * 
+         * Maybe another way to do the comparison???
+         */
+        
+        if ( count($invoicePositionsArrayDB) == count($invoicePositionsArray) ) {
+            
+            //if arrays are the same length:
+            for ($i = 0; $i<count($invoicePositionsArrayDB); $i=$i+1) {
+
+                    $j=0;
+                    foreach ($invoicePositionsArray as $invoicePosition) {
+                        if (
+                                ($invoicePositionsArrayDB[$i]->getPosition()->getId() ==  $invoicePosition->getPosition()->getId() 
+                                and
+                                $invoicePositionsArrayDB[$i]->getQuantity() == $invoicePosition->getQuantity() )
+                                 
+                            ) {
+                            $note_positions_not_saved = 0;
+                            break;
+                        }
+                        else {
+                            $note_positions_not_saved = 1; 
+                            $j = $j +1;
+                            if ($j == count($invoicePositionsArray) ) {
+                                goto outer;
+                            }
+                        }
+                    }
+            }
+        }
+        
         else {
             $note_positions_not_saved = 1;
         }
+        outer:
                        
         $contents = $this->renderView('invoice_edit/invoice_edit.html.twig', [
                     
             'form_position' => $form_position->createView(),
+            'note_invoice' => $note_invoice,
+            'note_position' => $note_position,
+            'integer' => $integer,
+            'zero' => $zero,
             'note_positions_not_saved' => $note_positions_not_saved,
             'invoice' => $invoice,
             'invoicePositionsArray'=>$invoicePositionsArray,
@@ -128,15 +201,35 @@ class InvoiceEditController extends AbstractController
 
     public function invoice_edit_save_positions($id_invoice)
     {
+        //saving changes from the table(changed InvoicePositions)  into DB (but befor - deleting all previous InvoicePositions):
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
 
         $invoiceManager = $this->getDoctrine()->getManager();
         $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
 
-        foreach ($invoicePositionsArray as $invoicePosition) {
-            $invoice->addInvoicePosition($invoicePosition);
-        }
+        $invoicePositionManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $invoicePositionManager->createQueryBuilder()
+                                                    -> delete ('App\Entity\InvoicePosition','ip')
+                                                    -> andwhere ('ip.invoice = :id_invoice')
+                                                    -> setParameter('id_invoice', $id_invoice);
+        $query = $queryBuilder->getQuery();
+        $query->execute();   
 
+        foreach ($invoicePositionsArray as $invoicePosition) {
+            
+            // for persisting Invoiceposition into DB I have to add Invoice and Position to the InvoicePosition again.
+            // See TODO in InvoiceAddController woth the same problem:
+                $invoicePosition->setInvoice($invoice);
+                     
+                $positionId=$invoicePosition->getPosition()->getId();
+                $repository=$this->getDoctrine()->getRepository(Position::class);
+                $position=$repository->find($positionId); 
+                $invoicePosition->setPosition($position);
+                
+                $invoicePositionManager->persist($invoicePosition);
+                $invoicePositionManager->flush();  
+        }
+        
         $this->session->set('sessionInvoicePositionsArray'.$id_invoice, null);
 
         return $this->redirectToRoute( 'invoice_edit', ['id_invoice' => $id_invoice]);
@@ -151,7 +244,7 @@ class InvoiceEditController extends AbstractController
             if ($invoicePosition->getPosition()->getId() ==  $id_position) {
 
                 $invoicePosition->setQuantity($quantity + 1);
-                //break;
+                
             }
                 
         }
@@ -176,7 +269,7 @@ class InvoiceEditController extends AbstractController
                 else {
                     $invoicePosition->setQuantity($quantity - 1);
                 }
-                //break;
+                
             }
             $i=$i+1;
         }

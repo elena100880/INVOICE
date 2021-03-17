@@ -143,11 +143,18 @@ class InvoiceAddController extends AbstractController
                     
                     $invoicePosition->setInvoice($invoice);
 
-                //???? persist for InvoicePositions doesn't work without this 3 lines!!
-                // that is:  I have to add the position to the InvoicePosition in such way as below,
-                //whereas my InvoicePosition object in each iteration ALREADY HAS associated position:  
-                
-                //??? - the Position in made-from-form $InvoicePosition from array $invoicePositionsArray - has NOT ALL assotiated positionInvoices objects (allthough in DB this Position HAS  assotiated positionInvoices objects). So I have to get Position from DB again and add it to my $InvoicePosition Position-property:
+                /**
+                 * @todo
+                 * 
+                 * ???? persist for InvoicePositions doesn't work without below 3 lines!!
+                 * 
+                 * that is:  I have to add the position to the InvoicePosition in such way as below,
+                 * whereas my InvoicePosition object in each iteration ALREADY HAS associated position:
+                 * ??? - the Position in made-from-form $InvoicePosition from array $invoicePositionsArray - 
+                 * has NOT ALL assotiated positionInvoices objects (allthough in DB this Position HAS  
+                 * assotiated positionInvoices objects). So I have to get Position from DB again and 
+                 * add it to my $InvoicePosition Position-property:
+                 */                    
                     $positionId=$invoicePosition->getPosition()->getId();
                     $repository=$this->getDoctrine()->getRepository(Position::class);
                     $position=$repository->find($positionId);
@@ -253,3 +260,18 @@ class InvoiceAddController extends AbstractController
     }
         
 }
+
+/**
+ * @todo for future study!!
+ * 
+ * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form???
+ * 
+ * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but before Submit of the Invoice
+ * 
+ * 3. How to make unset session variable for Array with positions after: leaving the page with 'back' or closing the page. 
+ * + maybe pop-up message: Are you sure to quit without saving?
+ * 
+ * 4. how to make different (mayby some self-generated id) session variables for Array with positions for enabling opening several Invoice_add pages
+ * 
+ * 
+ */

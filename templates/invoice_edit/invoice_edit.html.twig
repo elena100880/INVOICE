@@ -12,6 +12,32 @@
 
     {{form(form_position)}}
 
+    {% if integer == false and  note_position != 2 %}
+        <div class='note' >
+            TYPE INTEGER NUMBER !! <br> 
+        </div>
+    {% endif %}
+
+    {% if zero == 0 and  note_position != 2 %}
+        <div class='note' >
+            TYPE MORE THAN 0 !! <br> 
+        </div>
+    {% endif %}
+
+    {% if note_position == 1 %}
+        <div class='note' >
+            CHOOSE THE POSITION !! <br> 
+        </div>
+    {% endif %}
+
+    {% if note_position == 2 %}
+        <div class='note' >
+            THE POSITION IS ALREADY IN THE TABLE!!  <br> 
+            IF YOU WANT TO CHANGE THE QUANTITY - MAKE IT IN THE TABLE!! <br> 
+        </div>
+    {% endif %}
+
+
     <table>
         <tr>
             <th>ID of Position</th><th>Name</th><th>Value</th><th>DELETE -1 </th><th>Quantity</th><th> ADD + 1 </th> <th>Sum</th> <th> Delete the whole position </th> 
@@ -52,13 +78,13 @@
 
     {% if note_positions_not_saved == 1 %}
         <div class='note' >
-            Your positions were changed!!! Save or skip changes!!! <br> 
+            Your positions were changed!!! Save to DB or skip changes!!! <br> 
         </div>
     {% endif %}
 
     <button type='button' id='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP CHANGES  </a></button>
 
-    <button type='button' id='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SAVE CHANGES  </a></button>
+    <button type='button' id='clear'><a href="{{ path ('invoice_edit_save_positions', {id_invoice: invoice.id} ) }}"> SAVE CHANGES  </a></button>
 
     <h1>Edit Supplier and Recipient in the Invoice with ID {{invoice.id}}: </h1>
    
@@ -66,7 +92,16 @@
 
 {% endblock %} 
 
-
+{#  preventing resubmit after refreshing page!!!
+    find the below script here: https://dtbaker.net/files/prevent-post-resubmit.php;
+    TODO: another ways to do so for future studiing!!: https://stackoverflow.com/questions/6320113/how-to-prevent-form-resubmission-when-page-is-refreshed-f5-ctrlr/45656609#45656609     #}
+    {% block javascripts1 %}
+    {<script>
+        if ( window.history.replaceState ) {     
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>   
+{% endblock %}  
 
 
 
