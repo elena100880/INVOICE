@@ -79,9 +79,9 @@ class InvoiceEditController extends AbstractController
             //$invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
         }
 
-        // form for adding positions:
-        $invoicePosition = new InvoicePosition;
-        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition)
+        // form for adding positions to the table:
+        $invoicePositionFromForm = new InvoicePosition;
+        $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePositionFromForm)
                                     -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
                                     -> add ('send', SubmitType::class, ['label' => 'Add chosen position']);
         $form_position->handleRequest($request);
@@ -115,8 +115,8 @@ class InvoiceEditController extends AbstractController
             //if all above validation is OK, then saving chosen InvoicePosition into $invoicePositionsArray and saving this array into session:
             if ($integer == true  and $zero == 1 and $note_position == 0) {
                 
-                array_push($invoicePositionsArray, $invoicePosition);
-                $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
+                array_push($invoicePositionsArray, $invoicePositionFromForm);
+                $this->session->set('sessionInvoicePositionsArray'.$id_invoice, $invoicePositionsArray);
                 
             //clearing form-fields after submit (just self-redirecting  like refreshing page):
                 return $this->redirect($request->getUri());  
