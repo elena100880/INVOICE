@@ -264,12 +264,12 @@ class InvoiceAddController extends AbstractController
 /**
  * @todo for future study!!
  * 
- * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form???
+ * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Edit page)
  * 
- * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but before Submit of the Invoice
+ * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but before Submit of the Invoice (the same as in Invoice_Edit page)
  * 
  * 3. How to make unset session variable for Array with positions after: leaving the page with 'back' or closing the page. 
- * + maybe pop-up message: Are you sure to quit without saving?
+ * + maybe pop-up message: Are you sure to quit without saving? (the same as in Invoice_Edit page)
  * 
  * 4. how to make different (mayby some self-generated id) session variables for Array with positions for enabling opening several Invoice_add pages
  * 

@@ -351,83 +351,18 @@ class InvoiceEditController extends AbstractController
     }
 }
     
-
-    /*
-    public function position_add ($id_invoice, $id_position)
-    {
-                      
-    // extracting array of InvoicePosition objects for the chosen invoice and position        
-        $invoicePositionManager = $this->getDoctrine()->getManager();
-        $invoicePositionArray = $invoicePositionManager->getRepository(InvoicePosition::class)
-                                                        ->findBy ([
-                                                            'invoice' => $id_invoice, 
-                                                            'position' => $id_position 
-                                                        ]);
-        
-
-    //checking if this position is already exist in the invoice and adding new position if not exist
-        if (empty($invoicePositionArray) ) { 
-                
-            $positionManager = $this->getDoctrine()->getManager();
-            $position = $positionManager->getRepository(Position::class)->find($id_position);
-
-            $invoiceManager = $this->getDoctrine()->getManager();
-            $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
-            
-            $invoicePosition = new InvoicePosition();
-            $invoicePosition->setInvoice($invoice);
-            $invoicePosition->setPosition($position);
-            $invoicePosition->setQuantity(1);
-                        
-        }
-        else {
-    // changing the quantity for +1 
-            $invoicePosition =  $invoicePositionArray[0];
-            $quantity=$invoicePosition->getQuantity();
-            $invoicePosition->setQuantity($quantity + 1);
-        }
-
-        $invoicePositionManager ->persist($invoicePosition);
-        $invoicePositionManager ->flush();
-        
-    //reconstraction of chosen/not chosen positions (by getting saved GET form parameters) 
-        $requestForm=$this->session->get('sessionForm'); 
-        
-        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
-                                                        'form'=>$requestForm]);
-    }
-
-    public function position_delete ($id_invoice, $id_position)
-    {
-    // extracting array of InvoicePosition objects for the chosen invoice and position     
-        $invoicePositionManager = $this->getDoctrine()->getManager();
-        $invoicePositionArray = $this->getDoctrine()->getRepository(InvoicePosition::class)
-                                                ->findBy ([
-                                                    'invoice' => $id_invoice, 
-                                                    'position' => $id_position 
-                                                ]);
-        $invoicePosition =  $invoicePositionArray[0];
-
-    // delete the position 
-        if ($invoicePosition->getQuantity()==1) {
-            $invoicePositionManager->remove($invoicePosition);
-            $invoicePositionManager->flush();
-
-        }
-        else {
-            $quantity=$invoicePosition->getQuantity();
-            $invoicePosition->setQuantity($quantity - 1);
-            $invoicePositionManager ->persist($invoicePosition);
-            $invoicePositionManager ->flush();
-        }
-    
-    //reconstraction of chosen/not chosen positions (by getting saved GET 'form' parameters) 
-        $requestForm=$this->session->get('sessionForm'); 
-        
-        return $this->redirectToRoute( 'invoice_edit', ['id_invoice'=> $id_invoice,
-                                                        'form'=>$requestForm]);
-            
-        }
-   */
-        
-
+/**
+ * @todo for future study!!
+ * 
+ * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Add page)
+ * 
+ * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but! before Submit of the Invoice-form (the same as in Invoice_Add page) + after choosing new Supplier/Recipient (!!but befor submitting the form)- appear the Note: "Supplier/Recipient were changed. Save them to DB or skip changes". Mayby JS here or sesions????
+ * + below: two buttons like after the table of positions: 'Save to DB' and 'Skip changes'. And then - coomon buttons for the whole changes in the Invoice: 'Save the invoice', 'Skip all changes'.
+ * 
+ * 3. How to make unset session variable for Array with positions after: leaving the page with 'back' or closing the page. 
+ * + maybe pop-up message: Are you sure to quit without saving? (the same as in Invoice_Add page)
+ * 
+ * 
+ * 
+ * 
+ */
