@@ -32,7 +32,7 @@ class Invoice
     private $recipient;
 
     /**
-     * @ORM\OneToMany(targetEntity=InvoicePosition::class, mappedBy="invoice", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=InvoicePosition::class, mappedBy="invoice", orphanRemoval=true, cascade={"remove"})
      */
     private $invoicePosition;
 

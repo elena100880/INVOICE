@@ -7,7 +7,7 @@
 #form > div{
 	margin-top: 0px;
 }
-button[type='submit'], button[type='reset'], button#clear {
+button[type='submit'], button[type='reset'], .clear {
 	color: black;
 	margin: 20px 10px 20px 10px;
 	padding: 10px;
@@ -60,12 +60,26 @@ span[dir='ltr'] {
 }
 a {
 	text-decoration: none;
+	color: black;
+}
+.back {
+	text-decoration: none;
+	color: blue;
 }
 #plus_minus {
 	color:red;
 	font-weight: bold;
 	font-size: 200%;
 }
-
+.delete {
+	color: black;
+	margin: 20px 10px 20px 10px;
+	padding: 10px;
+	width: 100px;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
+	background-color: red;
+	border: 2px solid black;
+}
 
 

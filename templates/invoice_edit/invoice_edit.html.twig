@@ -82,18 +82,49 @@
         </div>
     {% endif %}
 
-    <button type='button' id='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP CHANGES IN THE TABLE </a></button>
+    <button type='button' class ='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP NOT SAVED IN DB CHANGES IN THE TABLE </a></button>
 
-    <button type='button' id='clear'><a href="{{ path ('invoice_edit_save_positions', {id_invoice: invoice.id} ) }}"> SAVE CHANGES FROM THE TABLE TO DB  </a></button>
+    <button type='button' class ='clear'><a href="{{ path ('invoice_edit_save_positions', {id_invoice: invoice.id} ) }}"> SAVE CHANGES FROM THE TABLE TO DB  </a></button>
+
+    <hr>
 
     <h1>Edit Supplier and Recipient in the Invoice with ID {{invoice.id}}: </h1>
 
-    {{form(form)}}  
+    {{form(form)}} 
 
+    @TODO: change the placement of the buttons
+    
+    <hr>
 
+    <button type='button' class = 'clear' ><a href="{{ path ('invoice_edit', {id_invoice: invoice.id} ) }}"> SKIP NOT SAVED IN DB CHANGES IN SUPPLIER/ RECIPIENT </a></button>
+
+    <button type='button' class ='clear'><a href="{{ path ('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}"> SKIP ALL NOT SAVED IN DB CHANGES </a></button>
+
+    <button type='button' class ='delete'><a href="{{ path ('invoice_delete', {id_invoice: invoice.id} ) }}"> DELETE THE INVOICE </a></button><br>
+
+    {% if note_invoice == 1 %}
+        <div class='note' >
+            INVOICE HAS NOT Edited!! <br> 
+            Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
+        </div><br>
+    {% endif %} 
+
+    {% if note_sup_recip_saved == 1 %}
+        <div class='note' >
+            New Recipient/Supplier was saved to DB !!!!!!!!!!!!!!
+        </div><br>
+    {% endif %} 
+
+    {% if note_invoice_saved == 1 %}
+        <div class='note' >
+            ALL CHANGES WERE SUCCESFULLY SAVED TO DB!!
+        </div><br>
+    {% endif %} 
+
+    <hr>
 
    
-    <a href="{{ path('invoices') }}">BACK TO LIST OF INVOICES !!!!  >>>> <br></a>
+    <br><a class = 'back' href="{{ path('invoices') }}">BACK TO LIST OF INVOICES !!!!  >>>> <br></a>
     
 
 {% endblock %} 

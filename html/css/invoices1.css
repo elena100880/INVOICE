@@ -53,5 +53,9 @@ span {
 span[dir='ltr'] {
 	width: 250px;
 }
+a {
+	text-decoration: none;
+	color: black;
+}
 
 

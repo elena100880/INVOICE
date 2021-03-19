@@ -132,8 +132,8 @@ class InvoiceAddController extends AbstractController
             $recipient = $form->get('recipient')->getData();
             
             
-    //validation of position field:        
-            if ($supplier != null or $recipient != null) {
+    //validation of supplier/recipient fields:        
+            if ($supplier != null and $recipient != null) {
                 
                 $invoiceManager = $this->getDoctrine()->getManager();
                 $invoiceManager->persist($invoice);
@@ -192,7 +192,7 @@ class InvoiceAddController extends AbstractController
         
     } 
     
-    public function invoice_clear_all_forms ()
+    public function invoice_add_clear_all ()
     {
         $this->session->set('sessionInvoicePositionsArray', null);
         return $this->redirectToRoute( 'invoice_add');
@@ -264,7 +264,7 @@ class InvoiceAddController extends AbstractController
 /**
  * @todo for future study!!
  * 
- * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Edit page)
+ * 1. make fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Edit page)
  * 
  * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but before Submit of the Invoice (the same as in Invoice_Edit page)
  * 

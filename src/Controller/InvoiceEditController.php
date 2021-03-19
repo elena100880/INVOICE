@@ -55,6 +55,8 @@ class InvoiceEditController extends AbstractController
         $integer = true;
         $zero = 1;
         $note_positions_not_saved = 0;
+        $note_sup_recip_saved = 0; 
+        $note_invoice_saved =0;
 
         $invoiceManager = $this->getDoctrine()->getManager();
         $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
@@ -179,7 +181,7 @@ class InvoiceEditController extends AbstractController
         $supplier = $invoice->getSupplier();
         $recipient = $invoice->getRecipient();
         $invoice1 = new Invoice();
-        $form = $this->createForm (InvoiceType::class, $invoice1)
+        $form = $this->createForm (InvoiceType::class, $invoice1) //if using $invoice, fields Supplier and Recipient demand Collection object!!! ???
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
                                                                     'class' => Supplier::class,
                                                                     'query_builder' => function (SupplierRepository $er) use ($supplier) 
@@ -214,8 +216,9 @@ class InvoiceEditController extends AbstractController
                         ->add('invoicePosition', HiddenType::class, ['mapped' => false])
 
                         ->add('invoice_add', HiddenType::class, ['mapped' => false])
-                        ->add('send', SubmitType::class, ['label'=>'SAVE ALL CHANGES IN THE INVOICE']);
-
+                        ->add('send_sup_recip', SubmitType::class, ['label'=>'SAVE CHANGES IN SUPPLIER/ RECIPIENT TO DB'])
+                        ->add('send_all', SubmitType::class, ['label'=>'SAVE ALL CHANGES TO DB']);
+                        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() ) {
@@ -223,6 +226,67 @@ class InvoiceEditController extends AbstractController
             $supplier = $form->get('supplier')->getData();
             $recipient = $form->get('recipient')->getData();
 
+            //validation of supplier/recipient fields:        
+            if ($supplier == null or $recipient == null) {
+
+                $note_invoice = 1;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
+            
+            }
+            else {
+
+                //saving Supplier and Recipient from FORM to DB:
+                $invoiceManager = $this->getDoctrine()->getManager();
+                $invoice->setSupplier ($supplier); //because in form was $invoice1
+                $invoice->setRecipient($recipient);  //because in form was $invoice1
+    
+                $invoiceManager->persist($invoice);
+                $invoiceManager->flush();
+                
+                // saving positions, if 'send_all' clicked:
+                if ($form->get('send_all')->isClicked() ) {
+                   
+                    if ($note_positions_not_saved == 1) {   //saving changes in the table to DB, if not saved yet:
+                        
+                        $invoicePositionManager = $this->getDoctrine()->getManager();
+                        $queryBuilder = $invoicePositionManager->createQueryBuilder()
+                                                                    -> delete ('App\Entity\InvoicePosition','ip')
+                                                                    -> andwhere ('ip.invoice = :id_invoice')
+                                                                    -> setParameter('id_invoice', $id_invoice);
+                        $query = $queryBuilder->getQuery();
+                        $query->execute();   
+    
+                        foreach ($invoicePositionsArray as $invoicePosition) {
+                            
+                            // for persisting Invoiceposition into DB I have to add Invoice and Position to the InvoicePosition again.
+                            // See TODO in InvoiceAddController where the same problem:
+                                $invoicePosition->setInvoice($invoice);
+                                    
+                                $positionId=$invoicePosition->getPosition()->getId();
+                                $repository=$this->getDoctrine()->getRepository(Position::class);
+                                $position=$repository->find($positionId); 
+                                $invoicePosition->setPosition($position);
+                                
+                                $invoicePositionManager->persist($invoicePosition);
+                                $invoicePositionManager->flush();  
+                        }
+                    }
+                    $note_positions_not_saved = 0; //changes in the table were saved
+                    $note_invoice_saved = 1;       // all changes were saved
+
+                    $invoiceManager = $this->getDoctrine()->getManager();
+                    $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
+                    $invoicePositionsCollection = $invoice->getInvoicePosition();  //collection of Invoice_position objects associated to this invoice
+                    $invoicePositionsArrayDB = $invoicePositionsCollection->toArray();  // change the Collection into Array
+                    
+                    $this->session->set('sessionInvoicePositionsArray'.$id_invoice, $invoicePositionsArrayDB);
+                    
+                }
+                else {
+ 
+                    $note_sup_recip_saved = 1;  // Flag, that only Sup/Recip were saved to DB
+
+                }
+            }
         }
 
         $contents = $this->renderView('invoice_edit/invoice_edit.html.twig', [
@@ -234,12 +298,13 @@ class InvoiceEditController extends AbstractController
             'integer' => $integer,
             'zero' => $zero,
             'note_positions_not_saved' => $note_positions_not_saved,
+            'note_sup_recip_saved' => $note_sup_recip_saved,
+            'note_invoice_saved' => $note_invoice_saved,
             'invoice' => $invoice,
             'invoicePositionsArray'=>$invoicePositionsArray,
                     
         ]);
-       
-               
+                      
         return new Response ($contents);
     } 
     
@@ -247,6 +312,19 @@ class InvoiceEditController extends AbstractController
     {
         $this->session->set('sessionInvoicePositionsArray'.$id_invoice, null);
         return $this->redirectToRoute( 'invoice_edit', ['id_invoice' => $id_invoice]);
+    }
+
+    public function invoice_delete ($id_invoice)
+    {
+        $this->session->set('sessionInvoicePositionsArray'.$id_invoice, null);
+
+        //remove invoice from DB, all assotiations are removed thanks to "cascade={"remove"}"-annotation in property $invoicePostion in Invoice class:
+        $invoiceManager = $this->getDoctrine()->getManager();
+        $invoice = $invoiceManager->getRepository(Invoice::class)->find($id_invoice);
+        $invoiceManager->remove($invoice);
+        $invoiceManager->flush(); 
+
+        return $this->redirectToRoute( 'invoices');
     }
 
     public function invoice_edit_save_positions($id_invoice)
@@ -268,7 +346,7 @@ class InvoiceEditController extends AbstractController
         foreach ($invoicePositionsArray as $invoicePosition) {
             
             // for persisting Invoiceposition into DB I have to add Invoice and Position to the InvoicePosition again.
-            // See TODO in InvoiceAddController woth the same problem:
+            // See TODO in InvoiceAddController where the same problem:
                 $invoicePosition->setInvoice($invoice);
                      
                 $positionId=$invoicePosition->getPosition()->getId();
@@ -354,15 +432,25 @@ class InvoiceEditController extends AbstractController
 /**
  * @todo for future study!!
  * 
- * 1. fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Add page)
+ * 1. make fields for enter the  quantity opposite every item in  the table - mayby customized build-in form??? (the same as in Invoice_Add page)
  * 
- * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but! before Submit of the Invoice-form (the same as in Invoice_Add page) + after choosing new Supplier/Recipient (!!but befor submitting the form)- appear the Note: "Supplier/Recipient were changed. Save them to DB or skip changes". Mayby JS here or sesions????
- * + below: two buttons like after the table of positions: 'Save to DB' and 'Skip changes'. And then - coomon buttons for the whole changes in the Invoice: 'Save the invoice', 'Skip all changes'.
+ * 2. How to make save inputs in the fields for Supplier and Recipient after pressing "skipp changes in the Table" (that is after refreshing page) , but! if they are not yet Submitted by the Invoice-form  (see the same @todo in Invoice_Add page)
+ * 
+ * + after choosing new Supplier/Recipient (!!but befor submitting the ivoice_form)- make appear the Note: "Supplier/Recipient were changed.
+ *  Save them to DB or skip changes". Mayby JS here or sessions here????:
+ *  
+ * how it's realised now:  
+ * Buttons "SKIP NOT SAVED CHANGES IN THE TABLE", "SKIP ALL CHANGES"  just refresh page and set the session Array to null; and button 
+ * "SKIP NOT SAVED CHANGES IN SUPPLIER/ RECIPIENT" also just refresh page. 
+ * So, chosen but not saved to DB Supplier/Recipient are skipped  after pressing all these 3 buttons. But I want to make them skipped only after pressing "SKIP ALL CHANGES" or "SKIP NOT SAVED CHANGES IN SUPPLIER/ RECIPIENT" .
+ * 
  * 
  * 3. How to make unset session variable for Array with positions after: leaving the page with 'back' or closing the page. 
  * + maybe pop-up message: Are you sure to quit without saving? (the same as in Invoice_Add page)
  * 
  * 
+ * 4. Put buttons "SKIP NOT SAVED CHANGES IN SUPPLIER/ RECIPIEN" and "SAVE CHANGES IN SUPPLIER/ RECIPIENT TO DB" in one line,
+ * and buttons "SAVE ALL CHANGES" and "SKIP ALL CHANGES" in the next one line - learn customizing forms!!????? 
  * 
- * 
+ *  
  */

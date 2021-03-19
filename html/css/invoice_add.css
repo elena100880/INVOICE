@@ -60,6 +60,11 @@ span[dir='ltr'] {
 }
 a {
 	text-decoration: none;
+	color: black;
+}
+.back {
+	text-decoration: none;
+	color: blue;
 }
 #plus_minus {
 	color:red;
