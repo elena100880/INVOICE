@@ -10,7 +10,7 @@ in project folder:
 + `compose install`
 + `docker-compose up`
 
-Then open http://localhost/index.php/<route_path> in tour browser.
+Then open http://localhost/index.php/<route_path> in your browser.
 
 
 ***
