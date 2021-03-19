@@ -4,7 +4,7 @@
 **Launch with Docker in Linux**:
 
 Execute commands:
-+ `git clone https://github.com/elena100880/STUDY-PROJECT`
++ `git clone https://github.com/elena100880/INVOICE-additional-part-of-study-project`
 
 in project folder:
 + `compose install`
