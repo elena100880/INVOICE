@@ -13,7 +13,7 @@
 
     <button type="button" id='all'><a class="button" href="{{ path('invoices') }}">Show all invoices</a></button><br>
 
-    <a href="{{ path ('invoice_add_clear_all') }}">ADD NEW INVOICE  !!!!  >>>>></a><br><br>
+    <a class = 'back' href="{{ path ('invoice_add_clear_all') }}">ADD NEW INVOICE  !!!!  >>>>></a><br><br>
 
             <table>
                 <tr>
@@ -41,7 +41,7 @@
                                {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
                             {% endfor %} 
                         </td>
-                        <td> <a href="{{ path('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}">edit the invoice  >></a>  </td>
+                        <td> <a class = 'back' href="{{ path('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}">edit the invoice  >></a>  </td>
                     </tr>
                 {% endif %} 
                 {% endfor %}   
