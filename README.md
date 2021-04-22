@@ -1,4 +1,4 @@
-### Additional part of STUDY PROJECT - adding invoices
+### Additional part of STUDY PROJECT - INVOICE
 
 
 **Launch with Docker in Linux**:
