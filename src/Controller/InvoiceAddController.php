@@ -47,19 +47,27 @@ class InvoiceAddController extends AbstractController
 
     public function invoice_add(Request $request) : Response
     {     
-        // flags note that all is OK:
-        $note_position = 0;
-        $note_invoice = 0;
-        $integer = true;
-        $zero = 1;
-                
-        if ( $this->session->get('sessionInvoicePositionsArray') != null)  {
+        // flags:
+        $note_position = 1; // notes that position was chosen in input field for position
+        $note_invoice = 1;  //notes that recipient and supplier were chosen in input fields
+        $integer = true;  //notes that inputed quantity of the position is integer
+        $zero = 1; //notes that inputed quantity is not zero or empty
+        
+        /* 
+         * if some time ago we have began to create an invoice, but leave the page, created table with the positions in it is saved in session;
+         *
+         * and after open this page again we will see this table again.
+         * It is because of for the present time I haven't think out  the way to unset this session variable after leaving Invoice-add page
+         * For the momemt I only add deleting this session variable when getting to Invoice-add page by link at Invoices-list page
+         */
+        if ( $this->session->get('sessionInvoicePositionsArray') !== null)  {
             $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
         }
         else {
             $invoicePositionsArray = array();
         }
 
+        //form for adding chosen positions to the table:
         $invoicePosition = new InvoicePosition;
         $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition) //, ['method' => 'GET'])
                                
@@ -80,11 +88,11 @@ class InvoiceAddController extends AbstractController
             }
 
             if ($quantity == '0') {
-                $zero = 0;  // notice flag "TYPE MORE THAN 0 !!" if quantity =0
+                $zero = 0;  // notice flag "TYPE MORE THAN 0 !!" if quantity == 0. The validation for 'empty field' I left for the browser for the moment
             }
                
             if ($position == null) {
-                $note_position = 1;  // notice flag "Add the position", if position field is empty
+                $note_position = 0;  // notice flag "Add the position", if position field is empty
             }
             else {            
                 foreach ($invoicePositionsArray as $invoicePositionInArray) {
@@ -95,28 +103,32 @@ class InvoiceAddController extends AbstractController
                 }
             }
             
-            //saving chosen InvoicePosition into array and saving this array into session:
-            if ($integer == true  and $zero == 1 and $note_position == 0) {
+        //if all is OK, adding the chosen InvoicePosition to the table and saving array of InvoicePositions objects to the session:
+            if ($integer == true  and $zero == 1 and $note_position == 1) {
                 
                 array_push($invoicePositionsArray, $invoicePosition);
                 $this->session->set('sessionInvoicePositionsArray', $invoicePositionsArray);
                 
-            //clearing form-fields after submit (just self-redirecting or refreshing):
+            //clearing form-fields after submit (just self-redirecting, that is refreshing):
                 return $this->redirect($request->getUri());  
             }
         }
-               
+         
+        //form for adding recipient and supplier to the invoice:
         $invoice = new Invoice();
-        $form = $this->createForm (InvoiceType::class, $invoice)
+        $form = $this->createForm (InvoiceType::class, $invoice) 
+        /* left createForm, instead of createFormBuilder for the possiblity of using eventListener in InvoiceType.php, 
+         * but have to rewrite 'adds' without multiple choice and hide the 'invoicePosition' field:
+         */
                         ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
                                                                     'class' => Supplier::class,
-                                                                    'choices' =>[],
+                                                                    'choices' =>[],  //It is for not showing  all select options in html in browser
                                                                     'attr' => array('class' => 'js-select2-invoice-supplier')   
                                                                 ])
 
                         ->add('recipient', EntityType::class, [     'label'=>'Recipient (type Name, Family or Address):',
                                                                     'class' => Recipient::class,
-                                                                    'choices' =>[],
+                                                                    'choices' =>[],  //It is for not showing  all select options in html in browser
                                                                     'attr' => array('class' => 'js-select2-invoice-recipient')   
                                                             ])
                         ->add('invoicePosition', HiddenType::class, ['mapped' => false])
@@ -135,10 +147,12 @@ class InvoiceAddController extends AbstractController
     //validation of supplier/recipient fields:        
             if ($supplier != null and $recipient != null) {
                 
+        //saving invoice into DB if all is OK:
                 $invoiceManager = $this->getDoctrine()->getManager();
                 $invoiceManager->persist($invoice);
                 $invoiceManager->flush();
 
+        //saving invoicePositions from the table to DB for our created invoice:
                 foreach ($invoicePositionsArray as $invoicePosition) {
                     
                     $invoicePosition->setInvoice($invoice);
@@ -146,13 +160,15 @@ class InvoiceAddController extends AbstractController
                 /**
                  * @todo
                  * 
-                 * ???? persist for InvoicePositions doesn't work without below 3 lines!!
+                 * ???? persist for InvoicePositions doesn't work without below 3 lines of code!!
                  * 
-                 * that is:  I have to add the position to the InvoicePosition in such way as below,
-                 * whereas my InvoicePosition object in each iteration ALREADY HAS associated position:
-                 * ??? - the Position in made-from-form $InvoicePosition from array $invoicePositionsArray - 
-                 * has NOT ALL assotiated positionInvoices objects (allthough in DB this Position HAS  
-                 * assotiated positionInvoices objects). So I have to get Position from DB again and 
+                 * that is:  I have to add the position property to the InvoicePosition in such way as below,
+                 * whereas my InvoicePosition object in each iteration ALREADY HAS associated position property.
+                 * 
+                 * But  this Position  -  HAS NOT all assotiated positionInvoices objects 
+                 * (allthough in DB this Position HAS more assotiated positionInvoices objects). 
+                 * 
+                 * So I have to get Position from DB again and 
                  * add it to my $InvoicePosition Position-property:
                  */                    
                     $positionId=$invoicePosition->getPosition()->getId();
@@ -160,7 +176,7 @@ class InvoiceAddController extends AbstractController
                     $position=$repository->find($positionId);
 
                     $invoicePosition->setPosition($position);
-                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!! - - WRONG!!! persists new duplicate positions after creating new Invoice!!
+                    // *@ORM\ManyToOne(targetEntity=Position::class, inversedBy="positionInvoice", cascade={"persist"}) - was added to Position-property in InvoicePosition class!! - but thay was WRONG!!! as persists new duplicate positions after creating new Invoice!!
 
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($invoicePosition);
@@ -172,7 +188,7 @@ class InvoiceAddController extends AbstractController
                             
             }
             else {
-                $note_invoice = 1;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
+                $note_invoice = 0;  // notice flag "INVOICE HAS NOT ADDED!! Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!", if one or both field are not chosen
             }
         }
 
@@ -192,12 +208,14 @@ class InvoiceAddController extends AbstractController
         
     } 
     
+    //deleting session variable with array of InvoicePositions objects (that is deleting all the table with chosen positions):
     public function invoice_add_clear_all ()
     {
         $this->session->set('sessionInvoicePositionsArray', null);
         return $this->redirectToRoute( 'invoice_add');
     }
-        
+    
+     //adding +1 item to the position in the table, but not save in DB yet (by pressing '+' in the table):
     public function invoice_add_position_add ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
@@ -216,6 +234,7 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add' );  
     }
 
+   //deleting -1 item to the position in the table, but not save in DB yet (by pressing '-' in the table):
     public function invoice_add_position_delete ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
@@ -226,7 +245,7 @@ class InvoiceAddController extends AbstractController
                 if ($invoicePosition->getPosition()->getId() ==  $id_position) {
 
                     if ($quantity == 1) {
-                        array_splice($invoicePositionsArray, $i, 1);
+                        array_splice($invoicePositionsArray, $i, 1); //deleting all the InvoicePosition object in the array
                     }
                     else {
                         $invoicePosition->setQuantity($quantity - 1);
@@ -240,6 +259,7 @@ class InvoiceAddController extends AbstractController
         return $this->redirectToRoute( 'invoice_add' );  
     }
 
+    //deleting the whole position in the table with all its quantity at once (by pressing 'X' in the table):
     public function invoice_add_position_delete_whole ($id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
@@ -264,12 +284,12 @@ class InvoiceAddController extends AbstractController
 /**
  * @todo for future study!!
  * 
- * 1. make fields for enter the  quantity opposite every item in  the table- mayby customized build-in form??? (the same as in Invoice_Edit page)
+ * 1. make fields for enter the  quantity next to every item in  the table- mayby customized build-in form??? (the same as in Invoice_Edit page)
  * 
- * 2. How to make saving inputs in fields for Supplier and Recipient after refreshing page but before Submit of the Invoice (the same as in Invoice_Edit page)
+ * 2. How to make saving inputs in the fields for Supplier and Recipient after refreshing page but before Submit of the Invoice (the same as in Invoice_Edit page), because after adding or deleting quantity in the table the page is also refreshed
  * 
  * 3. How to make unset session variable for Array with positions after: leaving the page with 'back' or closing the page. 
- * + maybe pop-up message: Are you sure to quit without saving? (the same as in Invoice_Edit page)
+ * + maybe pop-up message: Are you sure to quit without saving? (the same as in Invoice_Edit page). Maybe JS here??..
  * 
  * 4. how to make different (mayby some self-generated id) session variables for Array with positions for enabling opening several Invoice_add pages
  * 

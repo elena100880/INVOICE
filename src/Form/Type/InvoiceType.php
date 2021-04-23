@@ -39,7 +39,7 @@ class InvoiceType extends AbstractType
         $builder
             ->add('supplier', EntityType::class, [      'label'=>'Supplier (type Name or NIP):',
                                                         'class' => Supplier::class,
-                                                        'choices' =>[],
+                                                        'choices' =>[], //It is for not showing  all select options in html in browser
                                                         'required' => false,
                                                         'multiple' => true,
                                                         'attr' => array('class' => 'js-select2-invoice-supplier')   
@@ -47,7 +47,7 @@ class InvoiceType extends AbstractType
 
             ->add('recipient', EntityType::class, [      'label'=>'Recipient (type Name, Family or Address):',
                                                         'class' => Recipient::class,
-                                                        'choices' =>[],
+                                                        'choices' =>[],   //It is for not showing  all select options in html in browser
                                                         'required' => false,
                                                         'multiple' => true,
                                                         'attr' => array('class' => 'js-select2-invoice-recipient')   
@@ -55,7 +55,7 @@ class InvoiceType extends AbstractType
 
             ->add('invoicePosition', EntityType::class, ['label'=>'Position (type Name or Value):',
                                                         'class' => Position::class,
-                                                        'choices' =>[],
+                                                        'choices' =>[],  //It is for not showing  all select options in html in browser
                                                         'required' => false,
                                                         'multiple' => true,
                                                         'attr' => array('class' => 'js-select2-invoice-position')   
@@ -71,14 +71,14 @@ class InvoiceType extends AbstractType
                 $data = $event->getData();
                 $form = $event->getForm();
              
-                if ($form->has('invoice_filter')) {   
+                if ($form->has('invoice_filter')) {   //form view for Invoices-filtering page. 
                     $form->add  ('supplier', EntityType::class,  [ 
                                                                 'label'=>'Supplier (type Name or NIP):',
                                                                 'class' => Supplier::class,
                                                                 'required' => false,
 
-                                                                'query_builder' => function (SupplierRepository $er) use ($data) 
-                                                                                {
+                                                                'query_builder' => function (SupplierRepository $er) use ($data) //It is for not showing  all select options in html code in browser
+                                                                                {   
                                                                             
                                                                                     if (isset($data['supplier'])) {
                                                                                     return $er  ->createQueryBuilder('s')
@@ -103,7 +103,7 @@ class InvoiceType extends AbstractType
                                                                     'class' => Recipient::class,
                                                                     'required' => false,
     
-                                                                    'query_builder' => function (RecipientRepository $er) use ($data) 
+                                                                    'query_builder' => function (RecipientRepository $er) use ($data) //It is for not showing  all select options in html code in browser
                                                                                 {                                                                   
                                                                                     if (isset($data['recipient'])) {
                                                                                         return $er  ->createQueryBuilder('r')
@@ -128,7 +128,7 @@ class InvoiceType extends AbstractType
                                                                     'class' => Position::class,
                                                                     'required' => false,
         
-                                                                    'query_builder' => function (PositionRepository $er) use ($data) 
+                                                                    'query_builder' => function (PositionRepository $er) use ($data) //It is for not showing  all select options in html code in browser
                                                                                 {    
                                                                                     if (isset($data['invoicePosition'])) {
                                                                                         return $er  ->createQueryBuilder('pi')
@@ -150,12 +150,12 @@ class InvoiceType extends AbstractType
   
                 }
 
-                if ($form->has('invoice_add')) {
+                if ($form->has('invoice_add')) {   //form view for Invoice-adding and Invoice-editing pages
 
                     $form->add  ('supplier', EntityType::class,  [ 
                                                                     'label'=>'Supplier (type Name or NIP):',
                                                                     'class' => Supplier::class,
-                                                                    'query_builder' => function (SupplierRepository $er) use ($data) 
+                                                                    'query_builder' => function (SupplierRepository $er) use ($data) //It is for not showing  all select options in html code in browser
                                                                                     {
                                                                                         if (isset($data['supplier'])) {
                                                                                         return $er  ->createQueryBuilder('s')
@@ -176,7 +176,7 @@ class InvoiceType extends AbstractType
                     $form->add  ('recipient', EntityType::class,  [ 
                                                                     'label'=>'Recipient (type Name, Family or Address):',
                                                                     'class' => Recipient::class,
-                                                                    'query_builder' => function (RecipientRepository $er) use ($data) 
+                                                                    'query_builder' => function (RecipientRepository $er) use ($data) //It is for not showing  all select options in html code in browser
                                                                                 {                                                                   
                                                                                     if (isset($data['recipient'])) {
                                                                                         return $er  ->createQueryBuilder('r')

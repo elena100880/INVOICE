@@ -46,6 +46,7 @@ class InvoiceController extends AbstractController
 
     public function invoices(Request $request) : Response
     {  
+        // form for filtering invoices:
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice,['method' => 'GET'])
 
@@ -62,7 +63,8 @@ class InvoiceController extends AbstractController
 
         $form->handleRequest($request);
        
-        $empty_positions = 0;
+        $empty_positions = 0; //flag for filtering by empty positions
+        
         if ($form->isSubmitted()) {
             
             $suppliersCollection = $form->get('supplier')->getData();
@@ -71,17 +73,17 @@ class InvoiceController extends AbstractController
             $empty_positions = $form->get('empty_positions')->getData();
 
             $suppliersId=array();
-            foreach ($suppliersCollection as $supplier) {
-                array_push($suppliersId, $supplier->getId());
+            foreach ($suppliersCollection as $supplier) {     //is here have to be pagination???
+                array_push($suppliersId, $supplier->getId());  
             }
 
             $recipientsId=array();
-            foreach ($recipientsCollection as $recipient) {
+            foreach ($recipientsCollection as $recipient) {   //is here have to be pagination???
                 array_push($recipientsId, $recipient->getId());
             }
 
             $positionsId=array();
-            foreach ($positionsCollection as $position) {
+            foreach ($positionsCollection as $position) {     //is here have to be pagination???
                 array_push($positionsId, $position->getId());
             }
             
@@ -101,14 +103,14 @@ class InvoiceController extends AbstractController
                                     $queryBuilder=$queryBuilder -> andWhere ('r.id in (:recipientsId)')
                                                                 -> setParameter('recipientsId', $recipientsId);
                     }
-        //filtering invoices with no positions when empty_positions==1:           
+        //filtering invoices when there is no positions in input, and was chosen checkbox 'invoices with empty positions':           
                     /** 
-                     * This filtering is not here but in twig, where empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown
+                     * This filtering is not here, but in twig, where empty_positions FLAG is checked, and if FLAG==1 - then only empty envoices are shown
                      * @todo: mayby to think out some code in queryBuilder here to filter empty invoices???? not in twig
                      * 
                      */
 
-        //filtering invoices when some poitions were added to the Field-position:
+        //filtering invoices when some poitions were added to the input:
                     if (  !empty($positionsId) and ($empty_positions == 3 or $empty_positions == 2 or $empty_positions == 1)  ) {
                                     $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip')
                                                                 -> join ('ip.position', 'p')
@@ -116,7 +118,7 @@ class InvoiceController extends AbstractController
                                                                 -> setParameter('positionsId', $positionsId);
                     }
 
-        //filtering invoices with existing positions:           
+        //filtering invoices when poitions were not added to the input, but was chosen checkbox 'invoices with not empty positions':           
                     if ( $empty_positions == 2 and empty($positionsId) ) {
                                     $queryBuilder=$queryBuilder -> join ('i.invoicePosition', 'ip');
                                                                 
@@ -124,13 +126,13 @@ class InvoiceController extends AbstractController
                     $invoices  = $queryBuilder->getQuery()->getResult();    
                 /**
                  * @todo
-                 * !! this invoices have only associated InvoicePosition-objects in them;
-                 * that is: filtered invoices have only InvoicePosition-objects with 
-                 * positions-id, which was chosen in Position filter.
+                 * !! this $invoices-array have in it only associated InvoicePosition-objects;
+                 * that is: filtered $invoices have only InvoicePosition-objects with 
+                 * positions-id, which was chosen in Position-input.
                  * 
-                 * Below - adding missing InvoicePosition-objects to filtered above $invoices (if Position field is not empty).
+                 * Below - adding missing InvoicePosition-objects for $invoices-array filtered above  (if Position field is not empty).
                  * It is needed for printing all positions in the table for particular invoice.
-                 * !!!! - Mayby there is another way to do this - more complicated above query??? or sth else??
+                 * !!! - Mayby there is another way to do this - maybe more complicated above query??? or sth else??
                  * 
                  * also - 500 risk here ??? @todo pagination????
                  */
@@ -159,7 +161,7 @@ class InvoiceController extends AbstractController
                     $invoices = $invoices2;
                 }   
         }  
-        else {
+        else {  //all invoices if the form is not submitted:
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
@@ -170,19 +172,20 @@ class InvoiceController extends AbstractController
 
         }
 
-/** 
- * STUDY !!:
+/* 
+ * some code for STUDY purposes!!:
+ * 
  * /// getting array of positions associated with the invoices with two join query: - so were chosen only the Positions-objects, 
- * which are present in invoices (for all invoices in this case)
+ * which are PRESENT in invoices (for all invoices in this case, or if to add 'andWhere' for invoices- then for those invoices)
  *      $queryBuilder = $entityManager->createQueryBuilder()
  *                                         -> select('p', 'pi', 'i')
  *                                         -> from ('App\Entity\Position', 'p')
  *                                         -> join ('p.positionInvoice', 'pi')
  *                                         -> join ('pi.invoice', 'i')
- *                                          -> orderBy('i.id', 'ASC');
+ *                                         -> orderBy('i.id', 'ASC');
  *         $positions  = $queryBuilder->getQuery()->getResult();   
  * 
- * /// getting array of positionInvoices associated with the invoices (WHERE for invoices must be added here): 
+ * /// getting array of positionInvoices associated with the invoices ('andWHERE' for invoices must be added here): 
  * (instead of getting Collection with getInvoicePosition()-method)
  *        $queryBuilder = $entityManager->createQueryBuilder()
  *                                         -> select('pi', 'i')
@@ -191,13 +194,14 @@ class InvoiceController extends AbstractController
  *                                         -> orderBy('i.id', 'ASC');
  *         $positionInvoices  = $queryBuilder->getQuery()->getResult();   
  * 
- * /// getting array of positionInvoices withot join-to-invoice as here is no WHERE-condition for the invoice, 
+ * /// getting array of positionInvoices without join-to-invoice, as here is no WHERE-condition for the invoice, 
  * we use ALL invoices, so - ALL posInvoices-objects: (instead of getting Collection with getInvoicePosition()-method)
  *  *            $queryBuilder = $entityManager->createQueryBuilder()
  *                                         -> select('pi')
  *                                         -> from ('App\Entity\InvoicePosition', 'pi');
  *         $positionInvoices  = $queryBuilder->getQuery()->getResult();   //TODO: pagination???? 
  */
+
         $contents = $this->renderView('invoices/invoices.html.twig', [
                 
             'form' => $form->createView(),

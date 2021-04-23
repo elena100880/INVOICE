@@ -24,7 +24,7 @@
         </div>
     {% endif %}
 
-    {% if note_position == 1 %}
+    {% if note_position == 0 %}
         <div class='note' >
             CHOOSE THE POSITION !! <br> 
         </div>
@@ -102,7 +102,7 @@
 
     <button type='button' class ='delete'><a href="{{ path ('invoice_delete', {id_invoice: invoice.id} ) }}"> DELETE THE INVOICE </a></button><br>
 
-    {% if note_invoice == 1 %}
+    {% if note_invoice == 0 %}
         <div class='note' >
             INVOICE HAS NOT Edited!! <br> 
             Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!

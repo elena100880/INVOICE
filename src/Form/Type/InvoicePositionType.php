@@ -34,7 +34,7 @@ class InvoicePositionType extends AbstractType
                 -> add('position', EntityType::class, [
                                                         'label'=>'Choose Positions (type Name or Value):',
                                                         'class' => Position::class,
-                                                        'choices' =>[],
+                                                        'choices' =>[],   //It is for not showing  all select options in html code in browser
                                                         'attr' => array('class' => 'js-select2-invoice-position')   
                                                         ])
                 -> add ('quantity', NumberType::class, [
@@ -60,7 +60,7 @@ class InvoicePositionType extends AbstractType
                     $form->add  ('position', EntityType::class,     [ 
                                                                         'label'=>'Choose Positions (type Name or Value):',
                                                                         'class' => Position::class,
-                                                                        'query_builder' => function (PositionRepository $er) use ($data) 
+                                                                        'query_builder' => function (PositionRepository $er) use ($data)  //It is for not showing  all select options in html code in browser
                                                                                         {                                                                                    
                                                                                             if (isset($data['position'])) {
                                                                                             return $er  ->createQueryBuilder('p')

@@ -7,7 +7,7 @@ invoices:
 
 invoice_add:
             path: /invoice/add
-            controller: App\Controller\InvoiceAddController::invoice_add
+            controller: App\Controller\InvoiceAddController::invoice_add 
 
             
 invoice_add_clear_all:

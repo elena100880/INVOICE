@@ -25,7 +25,7 @@
         </div>
     {% endif %}
 
-    {% if note_position == 1 %}
+    {% if note_position == 0 %}
         <div class='note' >
             CHOOSE THE POSITION !! <br> 
         </div>
@@ -84,7 +84,7 @@
    
     {{form(form)}}   
     
-    {% if note_invoice == 1 %}
+    {% if note_invoice == 0 %}
         <div class='note' >
             INVOICE HAS NOT ADDED!! <br> 
             Recipient or Supplier field CAN'T be empty !!!!!!!!!!!!!!
@@ -92,6 +92,7 @@
 
     {% endif %} <br><br>
 
+    {# deleting session variable with array of InvoicePositions objects chosen earlier for creating new Invoice, that is this button clear the table  #}
     <button type='button' id='clear'><a href="{{ path ('invoice_add_clear_all') }}"> CLEAR ALL!!  </a></button><br><br>
 
     <a class = 'back' href="{{ path('invoices') }}">BACK TO LIST OF INVOICES  !!!!  >>>>></a><br><br>

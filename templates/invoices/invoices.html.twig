@@ -13,7 +13,8 @@
 
     <button type="button" id='all'><a class="button" href="{{ path('invoices') }}">Show all invoices</a></button><br>
 
-    <a class = 'back' href="{{ path ('invoice_add_clear_all') }}">ADD NEW INVOICE  !!!!  >>>>></a><br><br>
+    {# deleting session variable with array of InvoicePositions objects chosen earlier for creating new Invoice:  #}
+    <a class = 'back' href="{{ path ('invoice_add_clear_all') }}">ADD NEW INVOICE  !!!!  >>>>></a><br><br> 
 
             <table>
                 <tr>
@@ -21,29 +22,32 @@
                 </tr>
                 
                 {% for invoice in invoices %}   {# TODO: risk 500??? , !!!!!pagination??? #}
-                {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %}
-                        {# Here empty_positions FLAG is checked, and if FLAG=1 - then only empty envoices are shown #}
-                {% else %}
-                    <tr>
-                        <td> {{invoice.id}} </td>
-                        <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
-                        <td> {{invoice.recipient.name}} {{invoice.recipient.family}}</td>
-                        <td> 
-                            {% set sum = 0 %}
-                            {% for invoicePosition in invoice.getInvoicePosition %}  
-                               {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
-                            {% endfor %} 
+                    
+                    {# Here empty_positions FLAG is checked, and if FLAG==1 but the invoice has some Positions, the Table here will be empty: #}
+                    {% if empty_positions == 1 and invoice.getInvoicePosition is not empty %} 
+                                        
+                    {# in all other situations we will see invoices in the table: #}
+                    {% else %}
+                        <tr>
+                            <td> {{invoice.id}} </td>
+                            <td> {{invoice.supplier.name}}, NIP:  {{invoice.supplier.nip}} </td>
+                            <td> {{invoice.recipient.name}} {{invoice.recipient.family}}</td>
+                            <td> 
+                                {% set sum = 0 %}
+                                {% for invoicePosition in invoice.getInvoicePosition %}  
+                                    {% set sum = sum + invoicePosition.getQuantity * invoicePosition.getPosition.getValue %}
+                                {% endfor %} 
 
-                            {{sum}}
-                        </td>
-                        <td> 
-                            {% for invoicePosition in invoice.getInvoicePosition %}  
-                               {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
-                            {% endfor %} 
-                        </td>
-                        <td> <a class = 'back' href="{{ path('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}">edit the invoice  >></a>  </td>
-                    </tr>
-                {% endif %} 
+                                {{sum}}
+                            </td>
+                            <td> 
+                                {% for invoicePosition in invoice.getInvoicePosition %}  
+                                    {{invoicePosition.getPosition.getName }}, {{invoicePosition.getPosition.getValue}}zł <br>
+                                {% endfor %} 
+                            </td>
+                            <td> <a class = 'back' href="{{ path('invoice_edit_clear_all', {id_invoice: invoice.id} ) }}">edit the invoice  >></a>  </td>{# deleting here session variable with array of InvoicePositions objects chosen earlier for editing this Invoice  #}
+                        </tr>
+                    {% endif %} 
                 {% endfor %}   
             </table>
        

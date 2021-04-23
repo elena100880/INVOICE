@@ -46,10 +46,10 @@ class AjaxSearchController extends AbstractController
                                                 -> setParameter('key2', addcslashes($key, '%_').'%') 
                                                 -> orWhere ('s.name LIKE :key1')
                                                 -> orWhere ('s.nip LIKE :key2');
-        $suppliers = $queryBuilder->getQuery()->getResult();     // 500 risk?????
+        $suppliers = $queryBuilder->getQuery()->getResult();     // 500 risk????? //is here have to be pagination???
 
         $returnArray=array();
-        foreach($suppliers as $supplier) {                  // 500 risk?????
+        foreach($suppliers as $supplier) {                  // 500 risk?????  //is here have to be pagination???
             $name = $supplier->getName();
             $nip = $supplier->getNip();
             $id = $supplier->getId();
