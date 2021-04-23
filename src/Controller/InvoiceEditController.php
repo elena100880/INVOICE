@@ -345,6 +345,39 @@ class InvoiceEditController extends AbstractController
         $invoiceManager->remove($invoice);
         $invoiceManager->flush(); 
 
+        /* Another ways of DELETING:
+           STUDY
+
+         // remove invoices's relations with queryBuilder:
+                /* $invoicePositionManager = $this->getDoctrine()->getManager();
+                    $queryBuilder = $invoicePositionManager->createQueryBuilder()
+                                                                -> delete ('App\Entity\InvoicePosition','ip')
+                                                                -> setParameter('id_invoice', $id_invoice)
+                                                                -> andwhere ('ip.invoice = :id_invoice);
+                    $query = $queryBuilder->getQuery();
+                    $query->execute();   */
+
+        // remove invoices's relations with raw SQL:
+                /* $SQLquery="DELETE FROM invoice_position AS ip WHERE  ip.invoice = :id_invoice";
+                        
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $stmt=$entityManager->getConnection()->prepare($SQLquery);
+                    $stmt->bindValue('id_invoice', $id_invoice);
+                    $stmt->execute();*/
+
+    
+        //remove invoice from DB with DQL:
+                /* $entityManager = $this->getDoctrine()->getManager();
+                    $DQLquery = $entityManager->createQuery("  DELETE App\Entity\Invoice i 
+                                                                WHERE i.id = :id ");
+                    $DQLquery->setParameter('id', $id_invoice);
+                    $DQLquery->execute(); 
+
+
+        */
+
+
+
         return $this->redirectToRoute( 'invoices');
     }
 
@@ -457,7 +490,7 @@ class InvoiceEditController extends AbstractController
 /**
  * @todo for future study!!
  * 
- * 1. make fields for enter the  quantity opposite every item in  the table - mayby customized build-in form??? (the same as in Invoice_Add page)
+ * 1. make fields for enter the  quantity next to every item in  the table - mayby customized build-in form??? (the same as in Invoice_Add page)
  * 
  * 2. How to make save inputs in the fields for Supplier and Recipient after pressing "skipp changes in the Table" (that is after refreshing page) , but! if they are not yet Submitted by the Invoice-form  (see the same @todo in Invoice_Add page)
  * 
@@ -475,7 +508,7 @@ class InvoiceEditController extends AbstractController
  * 
  * 
  * 4. Put buttons "SKIP NOT SAVED CHANGES IN SUPPLIER/ RECIPIEN" and "SAVE CHANGES IN SUPPLIER/ RECIPIENT TO DB" in one line,
- * and buttons "SAVE ALL CHANGES" and "SKIP ALL CHANGES" in the next one line - learn customizing forms!!????? 
+ * and buttons "SAVE ALL CHANGES", "SKIP ALL CHANGES" and "DELETE THE INVOICE" in the next one line - learn customizing forms!!????? 
  * 
  *  
  */
