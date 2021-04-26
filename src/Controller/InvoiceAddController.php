@@ -45,7 +45,7 @@ class InvoiceAddController extends AbstractController
         $this->session = $session;
     }
 
-    public function invoice_add(Request $request) : Response
+    public function invoiceAdd(Request $request) : Response
     {     
         // flags:
         $note_position = 1; // notes that position was chosen in input field for position
@@ -67,7 +67,7 @@ class InvoiceAddController extends AbstractController
             $invoicePositionsArray = array();
         }
 
-        //form for adding chosen positions to the table:
+    //form for adding chosen positions to the virtual table:
         $invoicePosition = new InvoicePosition;
         $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePosition) //, ['method' => 'GET'])
                                
@@ -114,7 +114,7 @@ class InvoiceAddController extends AbstractController
             }
         }
          
-        //form for adding recipient and supplier to the invoice:
+    //form for adding recipient and supplier to the invoice:
         $invoice = new Invoice();
         $form = $this->createForm (InvoiceType::class, $invoice) 
         /* left createForm, instead of createFormBuilder for the possiblity of using eventListener in InvoiceType.php, 
@@ -209,14 +209,14 @@ class InvoiceAddController extends AbstractController
     } 
     
     //deleting session variable with array of InvoicePositions objects (that is deleting all the table with chosen positions):
-    public function invoice_add_clear_all ()
+    public function invoiceAddClearAll ()
     {
         $this->session->set('sessionInvoicePositionsArray', null);
         return $this->redirectToRoute( 'invoice_add');
     }
     
      //adding +1 item to the position in the table, but not save in DB yet (by pressing '+' in the table):
-    public function invoice_add_position_add ($quantity, $id_position)
+    public function invoiceAddPositionAdd ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
             
@@ -235,7 +235,7 @@ class InvoiceAddController extends AbstractController
     }
 
    //deleting -1 item to the position in the table, but not save in DB yet (by pressing '-' in the table):
-    public function invoice_add_position_delete ($quantity, $id_position)
+    public function invoiceAddPositionDelete ($quantity, $id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
        
@@ -260,7 +260,7 @@ class InvoiceAddController extends AbstractController
     }
 
     //deleting the whole position in the table with all its quantity at once (by pressing 'X' in the table):
-    public function invoice_add_position_delete_whole ($id_position)
+    public function invoiceAddPositionDeleteWhole ($id_position)
     {
         $invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray');
        

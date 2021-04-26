@@ -5,26 +5,26 @@ invoices:
             path: /invoices
             controller: App\Controller\InvoiceController::invoices
 
+
 invoice_add:
             path: /invoice/add
-            controller: App\Controller\InvoiceAddController::invoice_add 
-
+            controller: App\Controller\InvoiceAddController::invoiceAdd 
             
 invoice_add_clear_all:
             path: /invoice/add/clear/all
-            controller: App\Controller\InvoiceAddController::invoice_add_clear_all
+            controller: App\Controller\InvoiceAddController::invoiceAddClearAll
 
 invoice_add_position_add:
             path: /position/add/{quantity}/{id_position}
-            controller: App\Controller\InvoiceAddController::invoice_add_position_add
+            controller: App\Controller\InvoiceAddController::invoiceAddPositionAdd
 
 invoice_add_position_delete:
             path: /position/delete/{quantity}/{id_position}
-            controller: App\Controller\InvoiceAddController::invoice_add_position_delete
+            controller: App\Controller\InvoiceAddController::invoiceAddPositionDelete
 
 invoice_add_position_delete_whole:
             path: /position/deletewhole/{id_position}
-            controller: App\Controller\InvoiceAddController::invoice_add_position_delete_whole
+            controller: App\Controller\InvoiceAddController::invoiceAddPositionDeleteWhole
 
 
 

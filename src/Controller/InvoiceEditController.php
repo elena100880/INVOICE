@@ -87,7 +87,7 @@ class InvoiceEditController extends AbstractController
             //$invoicePositionsArray = $this->session->get('sessionInvoicePositionsArray'.$id_invoice);
         }
 
-        // form for adding new positions to the table:
+    // form for adding new positions to the virtual table:
         $invoicePositionFromForm = new InvoicePosition;
         $form_position = $this  -> createForm(InvoicePositionType::class, $invoicePositionFromForm)
                                     -> add('invoice_position_add', HiddenType::class, ['mapped' => false])
