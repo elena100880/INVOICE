@@ -1,6 +1,14 @@
 ### Additional part of STUDY PROJECT - INVOICE
 CRUD for invoice
 
+level:
+
+\** all logic is in controllers
+
+\** validation - with flags in controllers
+
+
+
 **Launch with Docker in Linux**:
 
 Execute commands:
