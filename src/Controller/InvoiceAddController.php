@@ -156,21 +156,7 @@ class InvoiceAddController extends AbstractController
                 foreach ($invoicePositionsArray as $invoicePosition) {
                     
                     $invoicePosition->setInvoice($invoice);
-
-                /**
-                 * @todo
-                 * 
-                 * ???? persist for InvoicePositions doesn't work without below 3 lines of code!!
-                 * 
-                 * that is:  I have to add the position property to the InvoicePosition in such way as below,
-                 * whereas my InvoicePosition object in each iteration ALREADY HAS associated position property.
-                 * 
-                 * But  this Position  -  HAS NOT all assotiated positionInvoices objects 
-                 * (allthough in DB this Position HAS more assotiated positionInvoices objects). 
-                 * 
-                 * So I have to get Position from DB again and 
-                 * add it to my $InvoicePosition Position-property:
-                 */                    
+                           
                     $positionId=$invoicePosition->getPosition()->getId();
                     $repository=$this->getDoctrine()->getRepository(Position::class);
                     $position=$repository->find($positionId);

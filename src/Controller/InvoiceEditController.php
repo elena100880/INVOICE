@@ -275,8 +275,6 @@ class InvoiceEditController extends AbstractController
                         //saving new InvoicePositions:
                         foreach ($invoicePositionsArray as $invoicePosition) {
                             
-                            // for persisting Invoiceposition into DB I have to add Invoice and Position to the InvoicePosition again.
-                            // See @TODO in InvoiceAddController where the same problem:
                                 $invoicePosition->setInvoice($invoice);
                                     
                                 $positionId=$invoicePosition->getPosition()->getId();
