@@ -1,7 +1,6 @@
-### Additional part of STUDY PROJECT - INVOICE
+### INVOICE
 CRUD for invoice
 
-level:
 
 \** all logic is in controllers
 
